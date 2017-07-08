@@ -1,5 +1,5 @@
-require("./../file_io.js");
-require("./../storage.js");
+require("./../file_io/file_io.js");
+require("./../storage/storage.js");
 
 var record_id = require("./../../lang/msg.js").record_id;
 record_id("select-world");
@@ -9,7 +9,7 @@ $("#select-world").change(function() {
         return;
     }
     if ($(this).val() !== null) {
-        RUR.file_io.load_world_file($(this).val());
+        RUR.load_world_file($(this).val());
     }
     try {
         localStorage.setItem("world", $(this).find(':selected').text());

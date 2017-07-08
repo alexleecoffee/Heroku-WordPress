@@ -1,0 +1,34 @@
+{
+    "tags": {
+        "allowUnknownTags": true,
+        "dictionaries": ["jsdoc", "closure"]
+    },
+    "source": {
+        "include": [ "src/js", "tests", "src/lang"],
+        "exclude": ["tests/integration_tests/qunit-2.3.2.js"]
+    },
+    "plugins": ["plugins/markdown"],
+    "markdown": {
+        "tags": ["summary"]
+    },
+    "opts": {
+        "destination": "./api_docs/advanced_world_creation/",
+        "recurse": true,
+        "readme": "./api_docs/readme.md",
+        "template": "../node_modules/ink-docstrap/template",
+        "tutorials": "./api_docs/hand_written/"
+    },
+    "templates": {
+      "default" : {
+        "staticFiles": {
+          "include": ["src/css/jsdoc"]
+        }
+      },
+      "theme": "reeborg",
+      "linenums": true,
+      "outputSourceFiles": true,
+      "search": false,
+      "dateFormat": "dddd, MMMM Do YYYY",
+      "systemName": "Advanced World Creation"
+    }
+}

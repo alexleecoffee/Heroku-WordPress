@@ -7,7 +7,7 @@
       "_prev_x": 1,
       "_prev_y": 6,
       "_prev_orientation": 0,
-      "start_positions": [
+      "possible_initial_positions": [
         [
           1,
           6
@@ -102,8 +102,7 @@
     "position": {
       "x": 4,
       "y": 6
-    },
-    "orientation": 2
+    }
   },
   "small_tiles": false,
   "rows": 12,

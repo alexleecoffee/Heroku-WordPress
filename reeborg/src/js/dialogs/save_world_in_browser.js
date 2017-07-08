@@ -1,5 +1,5 @@
-require("./../storage.js");
-var clone_world = require("./../world/clone_world.js").clone_world;
+require("./../rur.js");
+require("./../storage/storage.js");
 var msg = require("./../../lang/msg.js");
 
 msg.record_id("browser-world-name", "NAME:");
@@ -29,7 +29,6 @@ dialog.find("form").on("submit", function( event ) {
 
 save_world = function () {
     RUR.storage._save_world($("#world-name").val().trim());
-    RUR._SAVED_WORLD = clone_world();
     dialog.dialog("close");
     $('#delete-world').show();
 };

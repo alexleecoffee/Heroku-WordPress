@@ -1,33 +1,64 @@
 require("./rur.js");
-require("./../lang/ui_en.js");
-require("./../lang/ui_fr.js");
-require("./../lang/ui_ko.js");
+var uien = require("./../lang/ui_en.js"),
+    uifr = require("./../lang/ui_fr.js"),
+    uiko = require("./../lang/ui_ko.js"),
+    en = require("./../lang/en.js"),
+    fr = require("./../lang/fr.js");
 
-require("./../lang/en.js");
-require("./../lang/fr.js");
+RUR.ui_en = uien.ui_en;
+RUR.en_to_en = uien.en_to_en;
+RUR.ui_fr = uifr.ui_fr;
+RUR.fr_to_en = uifr.fr_to_en;
+RUR.ui_ko = uiko.ui_ko;
+RUR.ko_to_en = uiko.ko_to_en;
+RUR.en = en.en;
+RUR.fr = fr.fr;
+
 RUR.untranslated = {"en":true, "fr":true};
 
+function merge_dicts (base, other) {
+    var key;
+    for(key in other){
+        if(other.hasOwnProperty(key)){
+            base[key] = other[key];
+        }
+    }
+}
 RUR.translation = RUR.ui_en;
+merge_dicts(RUR.translation, RUR.en);
 RUR.translation_to_english = RUR.en_to_en;
 
+RUR._translation_needed = {};
+RUR._translation_to_english_needed = {};
+
+
 RUR.translate = function (s) {
+    if (s==undefined) {
+        return "";
+    }
     if (RUR.untranslated[s]) {
         return s;
-    } else if (RUR.translation !== undefined && RUR.translation[s] !== undefined) {
+    } else if (RUR.translation[s] !== undefined) {
         return RUR.translation[s];
     } else {
-        console.log("Translation needed for");
-        console.log("%c" + s, "color:blue;font-weight:bold;");
+        if (RUR._translation_needed[s] == undefined) { // avoid giving multiple warnings
+            console.warn("Translation needed for " + s);
+            RUR._translation_needed[s] = true;
+        }
         return s;
     }
 };
 
 RUR.translate_to_english = function (s) {
-    if (RUR.translation_to_english[s] !== undefined) {
+    if (RUR.untranslated[s]) {
+        return s;
+    } else if (RUR.translation_to_english[s] !== undefined) {
         return RUR.translation_to_english[s];
     } else {
-        console.log("Translation to English needed for");
-        console.log("%c" + s, "color:green;font-weight:bold;");
+        if (RUR._translation_to_english_needed[s] == undefined) { // avoid giving multiple warnings
+            console.warn("Translation to English needed for " + s);
+            RUR._translation_to_english_needed[s] = true;
+        }
         return s;
     }
 };

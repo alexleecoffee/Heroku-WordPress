@@ -1,6 +1,5 @@
 
-require("./../visible_world.js");
-require("./../exceptions.js");
+require("./../drawing/visible_world.js");
 /* if the REPL is active, we do not record anything, and show immediately
    the updated world */
 

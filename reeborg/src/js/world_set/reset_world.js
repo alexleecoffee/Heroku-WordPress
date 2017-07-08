@@ -1,35 +1,26 @@
-require("./../world/create_empty.js");
-require("./../visible_robot.js");
-require("./../visible_world.js");
-var clone_world = require("./../world/clone_world.js").clone_world;
+require("./../rur.js");
+require("./../world_utils/import_world.js");
+require("./../drawing/visible_robot.js");
 
-//TODO: code for evaluating onload is essentially repeated in two different
-//files; it should be refactored.
-//
 //TODO: See if all defaults could be incorporated here, e.g. robot images, etc.
 
 exports.reset_world = reset_world = function () {
     if (RUR.state.editing_world){
         return;
     }
-    RUR.CURRENT_WORLD = clone_world(RUR._SAVED_WORLD);
-    RUR.vis_robot.set_trace_style("default");
-    RUR.reset_default_robot_images();
+    if (RUR.state.reset_default_robot_images_needed) {
+        RUR.reset_default_robot_images();
+    }
     RUR.MAX_STEPS = 1000;
     RUR.ANIMATION_TIME = 120;
-    if (RUR.CURRENT_WORLD.onload) {
-        RUR.state.evaluating_onload = true;
-        try {
-            eval(RUR.CURRENT_WORLD.onload);  // jshint ignore:line
-        } catch (e) {
-            RUR.show_feedback("#Reeborg-shouts",
-                RUR.translate("Problem with onload code.") + "<br><pre>" +
-                RUR.CURRENT_WORLD.onload + "</pre>");
-            console.log("error in onload:", e);
-        }
-        RUR.state.evaluating_onload = false;
+    RUR.vis_robot.animated_robots = [];
+    RUR.state.animated_robots = false;
+
+    RUR.set_current_world(RUR.clone_world(RUR.WORLD_BEFORE_ONLOAD));
+    if (RUR.state.run_button_clicked) { // do not process_onload
+        return;
     }
-    RUR.vis_world.draw_all();
+    RUR.world_utils.process_onload();
 };
 
 reset_world();

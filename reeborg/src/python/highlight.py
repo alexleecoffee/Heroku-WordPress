@@ -23,22 +23,20 @@ def extract_first_word(mystr, separators):
     return mystr, ''
 
 
-def tracing_line(indent, current_group, frame=False, last_line=False):
+def tracing_line(indent, current_group, last_line=False):
     '''Construct the tracing line'''
     global _watch, _highlight
     tracecall_name = 'RUR.set_lineno_highlight'
     watch_string = "_watch_(system_default_vars, loc=locals(), gl=globals())\n"
+    record_string = "RUR.record_frame('watch')\n"
     if _watch:
-        watch_info = indent + watch_string
+        watch_info = indent + watch_string + indent + record_string
     else:
         watch_info = ''
     if last_line:
         return watch_info
     if _highlight:
-        if frame:
-            trace = indent + tracecall_name + '(%s, True)' % current_group
-        else:
-            trace = indent + tracecall_name + '(%s)' % current_group
+        trace = indent + tracecall_name + '(%s)' % current_group
     else:
         trace = ''
     return watch_info + trace
@@ -54,7 +52,7 @@ def replace_brackets_and_sharp(src):
             if char == quote:
                 in_string = False
                 quote = None
-            elif char in ['(', ')', '[', ']', '{', '}']:
+            elif char in ['(', ')', '[', ']', '{', '}', '#']:
                 char = ' '
         elif char == '"' or char == "'":
             quote = char
@@ -108,23 +106,30 @@ def check_balanced_brackets(src):
     else:
         return False
 
-# Some instructions already result in a frame recording;
-# there is no need for these to record an extra frame.
-RECORDING = ["move", "avance",
-             "turn_left", "tourne_a_gauche",
-             "take", "prend",
-             "put", "depose",
-             "build_wall", "construit_un_mur",
-             "write", "ecrit",
-             "repeat", "repete",
-             "pause",
-             "print",
-             "narration",
-             "clear_print"]
+
+def is_assignment(line):
+    '''assume only one assignment symbol in line'''
+    assignments = ["+=", "-=", "*=", "@=", "/=", "//=", "%=", "**=",
+                   ">>=", "<<=", "&=", "^=", "|="]
+    for assignment in assignments:
+        if assignment in line:
+            found = assignment
+            break
+    else:
+        return False
+
+    parts = line.split(found)
+    lhs = parts[0].strip()
+    try:
+        return lhs.isidentifier()  # Brython can raise an error for some reason
+    except:
+        return False
 
 
-def insert_highlight_info(src, highlight=True, var_watch=False):  # NOQA
+def insert_highlight_info(src, highlight=True, var_watch=False):
     global _watch, _highlight
+    if not src:
+        return '\n'
     _watch = var_watch
     _highlight = highlight
     line_info = check_balanced_brackets(src)
@@ -134,7 +139,7 @@ def insert_highlight_info(src, highlight=True, var_watch=False):  # NOQA
         return src, line_info
     src = src.replace('\t', '    ')
     lines = src.split("\n")
-    new_lines = [tracing_line('', [0], frame=True)]
+    new_lines = [tracing_line('', [0])]
     use_next_indent = False
     saved_lineno_group = None
     skip_docstring = 0
@@ -151,24 +156,24 @@ def insert_highlight_info(src, highlight=True, var_watch=False):  # NOQA
 
         line_wo_indent = line.lstrip()
         indent = line[:-len(line_wo_indent)]
-        first_word, remaining = extract_first_word(line_wo_indent, ' #=([{:\'"\\')  # NOQA
+        first_word, remaining = extract_first_word(line_wo_indent, ' #=([{:\'"\\')
         if use_next_indent:
-            if saved_lineno_group[-1] >= lineno:
+            if saved_lineno_group[-1] >= lineno:  # pylint: disable=E1136
                 new_lines.append(line)
                 continue
-            new_lines.append(tracing_line(indent, saved_lineno_group, frame=True))  # NOQA
+            new_lines.append(tracing_line(indent, saved_lineno_group))
             use_next_indent = False
 
         if first_word in 'def class'.split():
-            new_lines.append(tracing_line(indent, current_group, frame=True))
+            new_lines.append(tracing_line(indent, current_group))
             new_lines.append(line)
             skip_docstring = 2
         elif first_word in '''pass continue break if from import
                             del return raise try with yield'''.split():
-            new_lines.append(tracing_line(indent, current_group, frame=True))
+            new_lines.append(tracing_line(indent, current_group))
             new_lines.append(line)
         elif first_word in 'for while'.split():
-            new_lines.append(tracing_line(indent, current_group, frame=True))
+            new_lines.append(tracing_line(indent, current_group))
             new_lines.append(line)
             use_next_indent = True
             saved_lineno_group = current_group
@@ -178,19 +183,16 @@ def insert_highlight_info(src, highlight=True, var_watch=False):  # NOQA
             saved_lineno_group = current_group
         elif first_word == 'elif':
             new_lines.append(indent + first_word +
-                             tracing_line(' ', current_group, frame=True) +
+                             tracing_line(' ', current_group) +
                              ' and' + remaining)
-        elif '=' in line_wo_indent:
-            new_lines.append(tracing_line(indent, current_group, frame=True))
+        elif is_assignment(line_wo_indent):
+            new_lines.append(tracing_line(indent, current_group))
             new_lines.append(line)
         elif not first_word and remaining[0] == "#":
             new_lines.append(line)
-        elif first_word in RECORDING:
-            new_lines.append(tracing_line(indent, current_group))
-            new_lines.append(line)
         else:
             if lineno == current_group[0] and skip_docstring <= 0:
-                new_lines.append(tracing_line(indent, current_group, frame=True))  # NOQA
+                new_lines.append(tracing_line(indent, current_group))
             new_lines.append(line)
 
         skip_docstring -= 1
@@ -203,4 +205,3 @@ if __name__ == '__main__':
 
     result = insert_highlight_info(src.test_four_instructions)
     print(result)
-    # print("\n", result==src.test_single_move_result)
