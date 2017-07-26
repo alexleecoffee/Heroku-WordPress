@@ -9229,6 +9229,7 @@ RUR.make_default_menu_en = function () {
 
     contents = [
         [worlds + 'alone.json', 'Alone'],
+/*
         [worlds + 'empty.json', 'Empty'],
         [new_tutorial_en + 'around1.json', 'Around 1'],
         [new_tutorial_en + 'around2.json', 'Around 2'],
@@ -9282,6 +9283,7 @@ RUR.make_default_menu_en = function () {
         [worlds + 'maze_gen_py', 'Maze generation (Python)'],
         [worlds + 'maze_gen_js', 'Maze generation (Javascript)'],
         [worlds + 'blank.json', 'Blank canvas'],
+*/
         ];
 
     RUR.custom_world_select.make(contents);
