@@ -9224,11 +9224,16 @@ RUR.make_default_menu_en = function () {
         tutorial_en = RUR.BASE_URL + '/src/worlds/tutorial_en/',
         menus = RUR.BASE_URL + '/src/worlds/menus/',
         worlds = RUR.BASE_URL + '/src/worlds/',
+        js101 = RUR.BASE_URL + '/src/worlds/javascript101/',
         docs = RUR.BASE_URL + '/src/worlds/documentation/',
         permalinks = RUR.BASE_URL + '/src/worlds/permalinks/';
 
     contents = [
-        [worlds + 'alone.json', 'Alone'],
+        [js101 + 'func_1_1.json', 'Function_1_1'],
+        [js101 + 'func_1_2.json', 'Function_1_2'],
+        [js101 + 'func_1_3.json', 'Function_1_3'],
+        [js101 + 'func_1_4.json', 'Function_1_4'],
+        [js101 + 'func_1_5.json', 'Function_1_5'],
 /*
         [worlds + 'empty.json', 'Empty'],
         [new_tutorial_en + 'around1.json', 'Around 1'],
