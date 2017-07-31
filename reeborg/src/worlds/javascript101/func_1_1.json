@@ -7,53 +7,12 @@
       "_prev_y": 1,
       "_prev_orientation": 0,
       "objects": {},
-      "_orientation": 0,
-      "_is_leaky": true,
-      "_trace_history": [
-        {
-          "color": "seagreen",
-          "thickness": 1,
-          "prev_x": 70,
-          "x": 110,
-          "prev_y": 490,
-          "y": 490
-        },
-        {
-          "color": "seagreen",
-          "thickness": 1,
-          "prev_x": 110,
-          "x": 150,
-          "prev_y": 490,
-          "y": 490
-        }
-      ],
-      "_trace_style": "default",
-      "_trace_color": "seagreen",
-      "__id": 2,
-      "possible_initial_positions": [
-        [
-          1,
-          1
-        ]
-      ]
+      "_orientation": 0
     }
   ],
   "walls": {},
-  "description": “Take Reborg home“,
+  "description": "A 222 simple, empty world, ready for Reeborg to explore.",
   "small_tiles": false,
   "rows": 12,
-  "cols": 14,
-  "goal": {
-    "possible_final_positions": [
-      [
-        4,
-        1
-      ]
-    ],
-    "position": {
-      "image": "house",
-      "x": 4,
-      "y": 1
-    }
-  }
+  "cols": 14
 }
