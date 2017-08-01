@@ -29,13 +29,13 @@
   "goal": {
     "possible_final_positions": [
       [
-        3,
+        14,
         1
       ]
     ],
     "position": {
       "image": "house",
-      "x": 3,
+      "x": 14,
       "y": 1
     }
   }

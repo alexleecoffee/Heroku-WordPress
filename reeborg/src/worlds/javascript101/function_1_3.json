@@ -22,20 +22,20 @@
     }
   ],
   "walls": {},
-  "description": "Take Reeborg home. 3",
+  "description": "Take Reeborg home.",
   "small_tiles": false,
   "rows": 12,
   "cols": 14,
   "goal": {
     "possible_final_positions": [
       [
-        3,
+        5,
         1
       ]
     ],
     "position": {
       "image": "house",
-      "x": 3,
+      "x": 5,
       "y": 1
     }
   }
