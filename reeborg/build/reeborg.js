@@ -9229,11 +9229,11 @@ RUR.make_default_menu_en = function () {
         permalinks = RUR.BASE_URL + '/src/worlds/permalinks/';
 
     contents = [
-        [js101 + 'func_1_1.json', 'Function_1_1'],
-        [js101 + 'func_1_2.json', 'Function_1_2'],
-        [js101 + 'func_1_3.json', 'Function_1_3'],
-        [js101 + 'func_1_4.json', 'Function_1_4'],
-        [js101 + 'func_1_5.json', 'Function_1_5'],
+        [js101 + 'function_1_1.json', 'Function_1_1'],
+        [js101 + 'function_1_2.json', 'Function_1_2'],
+        [js101 + 'function_1_3.json', 'Function_1_3'],
+        [js101 + 'function_1_4.json', 'Function_1_4'],
+        [js101 + 'function_1_5.json', 'Function_1_5'],
 /*
         [worlds + 'empty.json', 'Empty'],
         [new_tutorial_en + 'around1.json', 'Around 1'],
