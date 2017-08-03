@@ -4,7 +4,7 @@
       "x": 1,
       "y": 1,
       "objects": {
-        "token": 1
+        "token": "infinite"
       },
       "_prev_x": 1,
       "_prev_y": 1,
@@ -22,12 +22,13 @@
   "small_tiles": false,
   "rows": 10,
   "cols": 10,
-  "objects": {
-    "2,1": {
-      "token": 1
-    },
-    "3,1": {
-      "token": 1
+  "goal": {
+    "objects": {
+      "3,1": {
+        "token": 1
+      }
     }
+  },
+  "objects": {
   }
 }
