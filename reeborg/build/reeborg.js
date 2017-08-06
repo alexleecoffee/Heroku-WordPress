@@ -9234,6 +9234,12 @@ RUR.make_default_menu_en = function () {
         [js101 + 'function_1_3.json', 'Function_1_3'],
         [js101 + 'function_1_4.json', 'Function_1_4'],
         [js101 + 'function_1_5.json', 'Function_1_5'],
+        [js101 + 'function_2_1.json', 'Function_2_1'],
+        [js101 + 'function_2_2.json', 'Function_2_2'],
+        [js101 + 'function_2_3.json', 'Function_2_3'],
+        [js101 + 'function_2_4.json', 'Function_2_4'],
+        [js101 + 'function_2_5.json', 'Function_2_5'],
+        [js101 + 'function_2_6.json', 'Function_2_6'],
 /*
         [worlds + 'empty.json', 'Empty'],
         [new_tutorial_en + 'around1.json', 'Around 1'],
