@@ -1,0 +1,52 @@
+{
+  "robots": [
+    {
+      "x": 1,
+      "y": 1,
+      "objects": {
+      },
+      "_prev_x": 1,
+      "_prev_y": 1,
+      "_prev_orientation": 0,
+      "start_positions": [
+        [
+          1,
+          1
+        ]
+      ],
+      "_orientation": 0,
+      "_is_leaky": true,
+      "_trace_history": [],
+      "_trace_style": "default",
+      "_trace_color": "seagreen",
+      "__id": 17,
+      "possible_initial_positions": [
+        [
+          1,
+          1
+        ]
+      ],
+      "model": "classic"
+    }
+  ],
+  "walls": {},
+  "small_tiles": false,
+  "rows": 10,
+  "cols": 10,
+  "objects": {
+    "3,1": {
+      "token": 1
+    },
+    "5,1": {
+      "token": 1
+    }
+  },
+  "goal": {
+    "objects": {
+      "5,1": {},
+      "7,1": {
+        "token": 2
+      }
+    }
+  }
+}
