@@ -9245,6 +9245,8 @@ RUR.make_default_menu_en = function () {
         [js101 + 'comment_log_1_2.json', 'Comment_Log_1_2'],
         [js101 + 'comment_log_1_3.json', 'Comment_Log_1_3'],
         [js101 + 'comment_log_1_4.json', 'Comment_Log_1_4'],
+        [js101 + 'function_3_1.json', 'Function_3_1'],
+        [js101 + 'function_3_2.json', 'Function_3_2'],
 /*
         [worlds + 'empty.json', 'Empty'],
         [new_tutorial_en + 'around1.json', 'Around 1'],
