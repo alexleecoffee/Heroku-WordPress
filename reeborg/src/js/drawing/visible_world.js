@@ -21,23 +21,12 @@ RUR.vis_world.refresh_world_edited = function () {
  * `cols` instead of `max_x`.
  * @param {integer} max_y The height of the world. Internally, we use
  * `rows` instead of `max_y`.
- * @todo Add example
  */
 
 RUR.set_world_size = function (max_x, max_y) {
     "use strict";
-    var height, width, canvas;
-    if (RUR.get_current_world().small_tiles) {
-        RUR.WALL_LENGTH = RUR.DEFAULT_WALL_LENGTH/2;
-        RUR.WALL_THICKNESS = RUR.DEFAULT_WALL_THICKNESS/2;
-        RUR.SCALE = 0.5;
-        RUR.BACKGROUND_CTX.font = "8px sans-serif";
-    } else {
-        RUR.WALL_LENGTH = RUR.DEFAULT_WALL_LENGTH;
-        RUR.WALL_THICKNESS = RUR.DEFAULT_WALL_THICKNESS;
-        RUR.SCALE = 1;
-        RUR.BACKGROUND_CTX.font = "bold 12px sans-serif";
-    }
+    var height, width, canvas, ctx, world;
+    set_scale();
 
     if (max_x !== undefined && max_y !== undefined) {
         height = (max_y + 1.5) * RUR.WALL_LENGTH;
@@ -48,8 +37,10 @@ RUR.set_world_size = function (max_x, max_y) {
         height = (RUR.MAX_Y + 1.5) * RUR.WALL_LENGTH;
         width = (RUR.MAX_X + 1.5) * RUR.WALL_LENGTH;
     }
-    RUR.get_current_world().rows = RUR.MAX_Y;
-    RUR.get_current_world().cols = RUR.MAX_X;
+
+    world = RUR.get_current_world();
+    world.rows = RUR.MAX_Y;
+    world.cols = RUR.MAX_X;
 
     if (height !== RUR.HEIGHT || width !== RUR.WIDTH) {
         for (canvas of RUR.CANVASES) { //jshint ignore:line
@@ -63,13 +54,26 @@ RUR.set_world_size = function (max_x, max_y) {
     RUR.vis_world.draw_all();
 };
 
+function set_scale () {
+    if (RUR.get_current_world().small_tiles) {
+        RUR.WALL_LENGTH = RUR.DEFAULT_WALL_LENGTH/2;
+        RUR.WALL_THICKNESS = RUR.DEFAULT_WALL_THICKNESS/2;
+        RUR.SCALE = 0.5;
+        RUR.BACKGROUND_CTX.font = "8px sans-serif";
+    } else {
+        RUR.WALL_LENGTH = RUR.DEFAULT_WALL_LENGTH;
+        RUR.WALL_THICKNESS = RUR.DEFAULT_WALL_THICKNESS;
+        RUR.SCALE = 1;
+        RUR.BACKGROUND_CTX.font = "bold 12px sans-serif";
+    }
+}
+
 // retaining compatibility with some of Vincent Maille's worlds.
 RUR.vis_world.compute_world_geometry = RUR.set_world_size;
 
 RUR.vis_world.draw_all = function () {
     "use strict";
     var ctx, world = RUR.get_current_world();
-
     if (world.blank_canvas) { // for game environment
         if (RUR.state.editing_world) {
             RUR.show_feedback("#Reeborg-shouts",
@@ -97,10 +101,21 @@ RUR.vis_world.draw_all = function () {
 };
 
 
+RUR.vis_world.clear_all_ctx = function () {
+    // useful for graphics.py
+    for (var ctx of RUR.ALL_CTX) {
+        ctx.clearRect(0, 0, RUR.WIDTH, RUR.HEIGHT);
+    }
+};
+
+
 RUR.vis_world.refresh = function () {
     "use strict";
     var canvas, canvases, goal, world = RUR.get_current_world();
 
+    if (world.blank_canvas) {
+        return;
+    }
     // This is not the most efficient way to do things; ideally, one
     // would keep track of changes (e.g. addition or deletion of objects)
     // and only redraw when needed.  However, it is not critical at
@@ -120,7 +135,13 @@ RUR.vis_world.refresh = function () {
     draw_tiles(world.pushables, RUR.PUSHABLES_CTX);
     draw_tiles(world.walls, RUR.WALL_CTX);
     draw_tiles(world.objects, RUR.OBJECTS_CTX);
-
+    if (world._CORRECT_PATH && world._CORRECT_PATH.length > 0) {
+        try {
+            draw_correct_path(world._CORRECT_PATH, world._CORRECT_PATH_COLOR);
+        } catch (e) {
+            console.warn("problem with draw_correct_path", e);
+        }
+    }
     draw_info();     // on ROBOT_CTX
     if (RUR.ROBOT_ANIMATION_FRAME_ID) {
         clearTimeout(RUR.ROBOT_ANIMATION_FRAME_ID);
@@ -160,6 +181,16 @@ function draw_coordinates () {
     "use strict";
     var x, y, ctx = RUR.BACKGROUND_CTX, grid_size=RUR.WALL_LENGTH;
 
+    // for some reason, background font gets reset to "10px sans-serif"
+    // when a session starts, this after I explicitly set it to
+    // something else, and never set it to 10px anywhere in my code.
+    // The code included here fixes this.
+    if (RUR.get_current_world().small_tiles) {
+        RUR.BACKGROUND_CTX.font = "8px sans-serif";
+    } else {
+        RUR.BACKGROUND_CTX.font = "bold 12px sans-serif";
+    }
+
     ctx.fillStyle = RUR.COORDINATES_COLOR;
     y = RUR.HEIGHT + 5 - grid_size/2;
     for(x=1; x <= RUR.MAX_X; x++){
@@ -177,8 +208,16 @@ function draw_coordinates () {
 
 function draw_grid_walls (ctx, edit){
     "use strict";
-    var i, j, image_e, image_n, wall_e, wall_n,
+    var i, j, image_e, image_n, wall_e, wall_n, draw_only_path, x, y,
         x_offset_e, x_offset_n, y_offset_e, y_offset_n;
+
+    if (RUR.SCALE == 0.5) {  // small wall, adjust grid walls to be less visible
+        ctx.save();
+        ctx.globalAlpha = 0.3;
+    } else if (!edit) {
+        ctx.save();
+        ctx.globalAlpha = 0.5;
+    }
 
     if (edit) {
         wall_e = RUR.THINGS["east_edit"];
@@ -196,18 +235,68 @@ function draw_grid_walls (ctx, edit){
     x_offset_n = wall_n.x_offset;
     y_offset_n = wall_n.y_offset;
 
-    for (i = 1; i <= RUR.MAX_X; i++) {
-        for (j = 1; j <= RUR.MAX_Y; j++) {
-            draw_single_object(image_e, i, j, ctx, x_offset_e, y_offset_e);
-            draw_single_object(image_n, i, j, ctx, x_offset_n, y_offset_n);
+    /* draw_grid_wall is called initially to draw the grid on the background
+       drawing context.
+       If may also be called to draw on the goal drawing context (above the tile)
+       if we are editing the world **or** if RUR.state.visible_grid evaluates
+       to RUR.PATH_ONLY.
+       
+       If RUR.state.visible_grid is equal to RUR.PATH_ONLY
+       and a desired path named RUR.public.path has been defined, then we only
+       draw the grid on that desired path.
+
+       If RUR.state.visible_grid is true but not equal to RUR.PATH_ONLY 
+       OR if RUR.public.path is not defined 
+       (or is not used for something that can be treated as
+       as path below, raising an Error), 
+       then we draw the grid everywhere.
+     */
+
+    draw_only_path = false;
+    if (!edit && // always draw when edit
+        RUR.state.visible_grid == RUR.PATH_ONLY && 
+        RUR.public !== undefined && // should always be the case
+        RUR.public.path !== undefined) { // world creator appears to have created a desired path
+            draw_only_path = true;
+        } 
+
+    if (draw_only_path) {
+        try {
+            for (i=0; i < RUR.public.path.length; i++) {
+                x = RUR.public.path[i][0];
+                y = RUR.public.path[i][1];
+                // draw all four grid "walls" surrounding each position
+                draw_single_object(image_e, x, y, ctx, x_offset_e, y_offset_e);
+                draw_single_object(image_e, x-1, y, ctx, x_offset_e, y_offset_e);
+                draw_single_object(image_n, x, y, ctx, x_offset_n, y_offset_n);                
+                draw_single_object(image_n, x, y-1, ctx, x_offset_n, y_offset_n);                
+            }
+        } catch (e) {
+            draw_only_path = false;
         }
+    }
+
+    if (!draw_only_path) { // no path or previous attempt failed
+        for (i = 1; i <= RUR.MAX_X; i++) {
+            for (j = 1; j <= RUR.MAX_Y; j++) {
+                // when drawing full grid, only need to draw East and North
+                // grid "wall" for each location
+                draw_single_object(image_e, i, j, ctx, x_offset_e, y_offset_e);
+                draw_single_object(image_n, i, j, ctx, x_offset_n, y_offset_n);
+            }
+        }
+    }
+
+
+    if (RUR.SCALE == 0.5 || !edit) {
+        ctx.restore();
     }
 }
 
 function draw_border (ctx) {
     "use strict";
-    var j, image, wall, x_offset, y_offset;
-
+    var j, image, wall, x_offset, y_offset, world;
+    world = RUR.get_current_world();
     wall = RUR.THINGS["east_border"];
     image = wall.image;
     x_offset = wall.x_offset;
@@ -242,7 +331,7 @@ function draw_robots () {
     }
     for (robot=0; robot < robots.length; robot++){
         body = robots[robot];
-        if (body._orientation == -1) { // skip random
+        if (body._orientation == RUR.RANDOM_ORIENTATION) {
             continue;
         }
         if (body.possible_initial_positions !== undefined && body.possible_initial_positions.length > 1){
@@ -266,7 +355,7 @@ function draw_random_robots (robots) {
     }
     for (robot=0; robot < robots.length; robot++){
         body = robots[robot];
-        if (body._orientation != -1) { // not random
+        if (body._orientation != RUR.RANDOM_ORIENTATION) {
             continue;
         }
         if (body.possible_initial_positions !== undefined && body.possible_initial_positions.length > 1){
@@ -467,7 +556,7 @@ function draw_anim (objects, ctx) {
             }
         } else {
             console.warn("Problem: unknown type in draw_anim; canvas =", ctx.canvas);
-            console.log("obj_here = ", obj_here, "objects = ", objects);
+            console.warn("obj_here = ", obj_here, "objects = ", objects);
         }
     }
 
@@ -539,14 +628,12 @@ function draw_single_object (image, i, j, ctx, x_offset, y_offset) {
     if (y_offset === undefined) {
         y_offset = 0;
     }
-    if (world.small_tiles) {
-        x_offset /= 2;
-        y_offset /= 2;
-    }
+    x_offset *= RUR.SCALE;
+    y_offset *= RUR.SCALE;
     x = i*grid_size + offset + x_offset;
     y = RUR.HEIGHT - (j+1)*grid_size + offset + y_offset;
     try{
-        if (world.small_tiles) {
+        if (RUR.SCALE == 0.5) {
             ctx.drawImage(image, x, y, image.width/2, image.height/2);
         } else {
             ctx.drawImage(image, x, y);
@@ -700,6 +787,91 @@ function draw_info () {
                 // information drawn to right side of object
                 ctx.fillText(info, (i+0.8)*scale, Y - (j)*scale);
             }
+        }
+    }
+}
+
+
+function draw_correct_path (path, color) {
+    "use strict";
+    var i, x, y, offset, prev_x, prev_y, ctx = RUR.OBJECTS_CTX; // below RUR.TRACE_CTX
+    ctx.strokeStyle = color;
+    ctx.lineCap = "round";
+
+    if(RUR.get_current_world().small_tiles) {
+        offset = 12;
+        ctx.lineWidth = 1;
+        ctx.setLineDash([2, 2]);
+    } else {
+        offset = 25;
+        ctx.lineWidth = 2;
+        ctx.setLineDash([4, 4]);
+    }
+
+    x = path[0][0] * RUR.WALL_LENGTH + offset;
+    y = RUR.HEIGHT - (path[0][1] + 1) * RUR.WALL_LENGTH + offset;
+
+    ctx.beginPath();
+    ctx.moveTo(x, y);
+    for (i=1; i < path.length; i++){
+        x = path[i][0] * RUR.WALL_LENGTH + offset;
+        y = RUR.HEIGHT - (path[i][1] + 1) * RUR.WALL_LENGTH + offset;
+        ctx.lineTo(x, y);
+    }
+    ctx.stroke();
+    ctx.setLineDash([]);
+
+    // draw arrows.
+    x = path[0][0] * RUR.WALL_LENGTH + offset;
+    y = RUR.HEIGHT - (path[0][1] + 1) * RUR.WALL_LENGTH + offset;
+    for (i=1; i < path.length; i++){
+        prev_x = x;
+        prev_y = y;
+        x = path[i][0] * RUR.WALL_LENGTH + offset;
+        y = RUR.HEIGHT - (path[i][1] + 1) * RUR.WALL_LENGTH + offset;
+        draw_arrow(x, y, prev_x, prev_y, ctx);
+    }
+}
+
+
+function draw_arrow(x, y, prev_x, prev_y, ctx) {
+    var len = ctx.lineWidth * 3;
+    ctx.beginPath();
+    if (x == prev_x) { // vertical arrow
+        y = (y + prev_y)/2; 
+        ctx.moveTo(x, y);
+        if (y > prev_y) {
+            ctx.lineTo(x-len, y-len);
+            ctx.stroke();
+            ctx.beginPath();
+            ctx.moveTo(x, y);
+            ctx.lineTo(x+len, y-len);
+            ctx.stroke();
+        } else {
+            ctx.lineTo(x-len, y+len);
+            ctx.stroke();
+            ctx.beginPath();
+            ctx.moveTo(x, y);
+            ctx.lineTo(x+len, y+len);
+            ctx.stroke();
+        }
+    } else {
+        x = (x + prev_x)/2;
+        ctx.moveTo(x, y);
+        if (x > prev_x) {
+            ctx.lineTo(x-len, y-len);
+            ctx.stroke();
+            ctx.beginPath();
+            ctx.moveTo(x, y);
+            ctx.lineTo(x-len, y+len);
+            ctx.stroke();
+        } else {
+            ctx.lineTo(x+len, y-len);
+            ctx.stroke();
+            ctx.beginPath();
+            ctx.moveTo(x, y);
+            ctx.lineTo(x+len, y+len);
+            ctx.stroke();
         }
     }
 }

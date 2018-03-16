@@ -12,12 +12,12 @@ test_utils.set_human_language = function (lang) {
 
 test_utils.reset = function () {
     RUR.CURRENT_WORLD = RUR.clone_world(test_utils.empty_world);
-    RUR._reset();
     RUR.state.code_evaluated = false;
     RUR.state.highlight = false;
     RUR.state.prevent_playback = false;
     test_utils.feedback_element = undefined;
     test_utils.content = undefined;
+    RUR.reset_world();
     test_utils.set_mocks();
 };
 
@@ -88,6 +88,9 @@ test_utils.eval_program = function(world_url, program_url, language) {
     }
     RUR.runner.eval(test_utils.program);
     last_frame = RUR.frames[RUR.frames.length - 1];
+    if (last_frame.error !== undefined) {
+        return false;
+    }
     try {
         return RUR.rec.check_goal(last_frame);
     } catch(e) {
@@ -138,6 +141,41 @@ test_utils.run_program = function(world_url, program_url, language) {
     RUR.runner.run(test_utils.playback);
     return RUR.frames;
 };
+
+test_utils.run_javascript_2 = function (world_url, program_url) {
+    return test_utils.run_program_2(world_url, program_url, "javascript");
+};
+
+
+test_utils.run_python_2 = function (world_url, program_url) {
+    return test_utils.run_program_2(world_url, program_url, "python");
+};
+
+
+test_utils.run_program_2 = function(world_url, program_url, language) {
+    var last_frame, world, step;
+    test_utils.reset();
+    RUR.state.programming_language = language;
+
+    if (world_url !== null) {
+        test_utils.load_world_file(world_url);
+    }
+    if (program_url !== undefined) {    // otherwise, reuse same program
+        test_utils.load_program(program_url);
+    }
+
+    try {
+        RUR.runner.run(test_utils.playback);
+        RUR.rec.conclude();
+        return true;  //  TODO: make use of this return value??
+    } catch(e) {
+        console.log(">>=========\nError raised", step, e);
+        console.log("  frames = ", RUR.frames);
+        console.log("  program = ", test_utils.program, "\n------------<<");
+        return false;
+    }
+};
+
 
 test_utils.playback = function() {
     return true;
@@ -193,3 +231,6 @@ description_editor.setValue = function (code) {
 onload_editor.setValue = function (code) {
     test_utils.onload = code;
 };
+onload_editor.setOption = function () {};
+pre_code_editor.setOption = function () {};
+post_code_editor.setOption = function () {};

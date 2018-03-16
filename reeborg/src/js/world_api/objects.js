@@ -16,10 +16,11 @@ require("./artefact.js");
  * additional arguments
  * @param {boolean} [options.goal] If `true`, this will represent a goal
  * i.e. the number of object that must be put at that location.
- * @param {integer} [options.number] The number of objects to add at that
+ * @param {integer} [options.number] The number of objects to **add** at that
  * location; it is 1 by default.
  * @param {boolean} [options.replace] If `true`, the specified number
- * (default=1) will replace the existing number of objects at that location.
+ * (default=1) will **replace** the existing number of objects at that location.
+ * During the Onload phase, this is automatically set to `true`.
  * @param {integer} [options.min] Specifies the minimum of objects to be
  * put at that location; together with `options.max`, it is used to choose
  * a random number of objects to be found at that location.
@@ -27,22 +28,16 @@ require("./artefact.js");
  * put at that location; together with `options.min`, it is used to choose
  * a random number of objects to be found at that location.
  *
- *
  * @throws Will throw an error if `(x, y)` is not a valid location.
  * @throws Will throw an error if `name` is not a known thing.
- * @todo add test
- * @todo add better examples
- * @todo deal with translation
- * @example
- * // shows how to set various objects;
- * // the mode will be set to Python and the highlighting
- * // will be turned off
- * World("/worlds/examples/object1.json", "Example 1")
  *
  */
 RUR.add_object = function (name, x, y, options) {
     "use strict";
-    var k, keys, args = {name: name, x:x, y:y, type:"objects", valid_names: RUR.KNOWN_THINGS};
+    var k, keys, args;
+
+    args = {name: RUR.translate_to_english(name), x:x, y:y,
+            type:"objects", valid_names: RUR.KNOWN_THINGS};
     if (options === undefined) {
         args.number = 1;
     } else {
@@ -56,12 +51,16 @@ RUR.add_object = function (name, x, y, options) {
                 options.number = options.min;
             }
         } else if (options.number === undefined) {
-            options.number = 1
+            options.number = 1;
         }
         keys = Object.keys(options);
         for (k of keys) {
             args[k] = options[k];
         }
+    }
+
+    if (RUR.state.evaluating_onload) {
+        args.replace = true;
     }
     if (args.replace) {
         RUR._set_nb_artefact(args);
@@ -80,21 +79,26 @@ RUR.add_object = function (name, x, y, options) {
  * @param {string} name Name of the object
  * @param {integer} x  Position: `1 <= x <= max_x`
  * @param {integer} y  Position: `1 <= y <= max_y`
- * @param {object} options  Need to include: `goal`, `number`, `all`
+ * @param {object} [options] A Javascript object (or Python dict) containing
+ * additional arguments
+ *
+ * @param {boolean} [options.goal] If `true`, this will represent a goal
+ * i.e. the number of object that must be put at that location.
+ * @param {integer} [options.number] The number of objects to **add** at that
+ * location; it is 1 by default.
+ * @param {boolean} [options.all] If `true`, all such objects will be removed.
  *
  * @throws Will throw an error if `(x, y)` is not a valid location.
  * @throws Will throw an error if `name` is not a known thing.
- * @throws Will throw an error if there is no background object to remove
+ * @throws Will throw an error if there is no object to remove
  *        at that location
- *
- * @todo add test
- * @todo add examples
- * @todo deal with translation
  */
 RUR.remove_object = function (name, x, y, options) {
     "use strict";
     var args, k, keys, world = RUR.get_current_world();
-    args= {x:x, y:y, type:"objects", name:name, valid_names: RUR.KNOWN_THINGS};
+
+    args= {x:x, y:y, type:"objects", name:RUR.translate_to_english(name),
+           valid_names: RUR.KNOWN_THINGS};
     if (options !== undefined) {
         keys = Object.keys(options);
         for (k of keys) {
@@ -130,23 +134,63 @@ RUR.remove_object = function (name, x, y, options) {
  * @param {integer} x  Position: `1 <= x <= max_x`
  * @param {integer} y  Position: `1 <= y <= max_y`
  *
- * @throws Will throw an error if `(x, y)` is not a valid location.
+ * @param {object} [options] A Javascript object (or Python dict) containing
+ * additional arguments
  *
- * @todo add test
- * @todo add proper examples
- * @todo deal with translation
- * @todo make sure it returns the correct info
+ * @param {boolean} [options.goal] If `true`, this will represent a goal
+ * i.e. the number of object that must be put at that location.
+ *
+ * @throws Will throw an error if `(x, y)` is not a valid location.
  *
  */
 
-RUR.get_objects = function (x, y) {
+RUR.get_objects = function (x, y, options) {
     "use strict";
-    return RUR._get_artefacts({x:x, y:y, type:"objects"});
+    var args, obj, obj_en, k, keys;
+    args = {x:x, y:y, type:"objects"};
+    if (options !== undefined && options.goal !== undefined) {
+        args.goal = options.goal;
+    }
+    obj_en = RUR._get_artefacts(args);
+
+
+    if (!obj_en) {
+        return null;
+    }
+
+    obj = {};
+    keys = Object.keys(obj_en);
+    for (k of keys) {
+        obj[RUR.translate(k)] = obj_en[k];
+    }
+    return obj;
 };
+
+
+/** @function is_object
+ * @memberof RUR
+ * @instance
+ * @summary This function returns `true/True` if a named obstacle is present
+ * at a given location, `false/False` otherwise
+ *
+ * @param {string} name The name of the obstacle
+ * @param {integer} x  Position: `1 <= x <= max_x`
+ * @param {integer} y  Position: `1 <= y <= max_y`
+ *
+ * @param {object} [options] A Javascript object (or Python dict) containing
+ * additional arguments
+ *
+ * @param {boolean} [options.goal] If `true`, this will represent a goal
+ * [i.e., the number of object that must be put at that location.]
+ *
+ * @throws Will throw an error if `(x, y)` is not a valid location.
+ *
+ */
 
 RUR.is_object = function (name, x, y, options) {
     "use strict";
-    var nb, args = {x:x, y:y, name:name, type:"objects", valid_names: RUR.KNOWN_THINGS};
+    var nb, args = {x:x, y:y, name:RUR.translate_to_english(name),
+                    type:"objects", valid_names: RUR.KNOWN_THINGS};
     if (options !== undefined && options.goal !== undefined) {
         args.goal = options.goal;
     }
@@ -163,4 +207,4 @@ RUR.is_object = function (name, x, y, options) {
   using it (e.g. in Vincent Maille's book) */
 RUR.add_object_at_position = function(name, x, y, number) { // Vincent Maille's book
     RUR.add_object(name, x, y, {number:number});
-}
+};

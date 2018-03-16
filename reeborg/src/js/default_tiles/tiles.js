@@ -19,6 +19,12 @@ tile = {name: "mud",
 };
 RUR.add_new_thing(tile);
 
+tile = {name: "soil",
+    url: RUR.BASE_URL + '/src/images/mud.png',
+    info: "Soil: usually safe, but looks identical to mud."
+};
+RUR.add_new_thing(tile);
+
 tile = {name: "ice",
     url: RUR.BASE_URL + '/src/images/ice.png',
     info: "Ice: Reeborg <b>cannot</b> detect this and <em>might</em> slide and move to the next location if it moves to this location."
@@ -27,6 +33,30 @@ RUR.add_new_thing(tile);
 
 tile = {name: "grass",
     url: RUR.BASE_URL + '/src/images/grass.png',
+    info: "Grass: usually safe."
+};
+RUR.add_new_thing(tile);
+
+tile = {name: "grass_top_left",
+    url: RUR.BASE_URL + '/src/images/grass_top_left.png',
+    info: "Grass: usually safe."
+};
+RUR.add_new_thing(tile);
+
+tile = {name: "grass_top_right",
+    url: RUR.BASE_URL + '/src/images/grass_top_right.png',
+    info: "Grass: usually safe."
+};
+RUR.add_new_thing(tile);
+
+tile = {name: "grass_bottom_left",
+    url: RUR.BASE_URL + '/src/images/grass_bottom_left.png',
+    info: "Grass: usually safe."
+};
+RUR.add_new_thing(tile);
+
+tile = {name: "grass_bottom_right",
+    url: RUR.BASE_URL + '/src/images/grass_bottom_right.png',
     info: "Grass: usually safe."
 };
 RUR.add_new_thing(tile);
@@ -94,7 +124,7 @@ tile = {name: "flame burst",
   y_offset: -8
 };
 
-RUR.add_new_thing(tile)
+RUR.add_new_thing(tile);
 
 // logs adapted from fire above
 tile = {name: "logs",
@@ -116,7 +146,7 @@ tile = {name: "smoke",
   y_offset: -8
 };
 
-RUR.add_new_thing(tile)
+RUR.add_new_thing(tile);
 
 
 /*--- home tiles ---*/

@@ -1,4 +1,5 @@
 require("./../rur.js");
+require("./../translator.js");
 require("./../utils/key_exist.js");
 require("./../utils/validator.js");
 require("./../recorder/record_frame.js");
@@ -10,25 +11,29 @@ require("./artefact.js");
  * @summary This function sets a named "thing" as a bridge at that location.
  * There can be only one bridge at a given location.
  *
- * @param {string} name The name of a bridge. If a new bridge
- *    is set at that location, it replaces the pre-existing one.
+ * @param {string} name The name of a bridge.
  * @param {integer} x  Position: `1 <= x <= max_x`
  * @param {integer} y  Position: `1 <= y <= max_y`
  *
  * @throws Will throw an error if `(x, y)` is not a valid location.
  * @throws Will throw an error if `name` is not a known thing.
- * @throws Will throw an error if there is already a bridge at that location.
-
- * @see Unit tests are found in {@link UnitTest#test_add_bridge}
- * @todo add examples
- * @todo deal with translation
+ * @throws Will throw an error if there is already a bridge at that location,
+ * unless this is done from code in the Onload editor in which case the
+ * new bridge replaces the old one and a message is written to the browser's
+ * console.
  *
  */
 RUR.add_bridge = function (name, x, y) {
     "use strict";
-    var args = {name: name, x:x, y:y, type:"bridge", single:true, valid_names: RUR.KNOWN_THINGS};
+    var args;
+    name = RUR.translate_to_english(name);
+    args = {name: name, x:x, y:y, type:"bridge", single:true, valid_names: RUR.KNOWN_THINGS};
     if (RUR.get_bridge(x, y)) {
-        throw new RUR.ReeborgError("There is already a bridge here.");
+        if (RUR.state.evaluating_onload) {
+            console.log(name + " is replacing " + RUR.translate(RUR.get_bridge(x, y)) + " as a bridge.");
+        } else {
+            throw new RUR.ReeborgError(RUR.translate("There is already a bridge here."));
+        }
     }
     RUR._add_artefact(args);
     RUR.record_frame("RUR.set_bridge", args);
@@ -39,28 +44,23 @@ RUR.add_bridge = function (name, x, y) {
  * @instance
  * @summary This function removes a bridge at a location.
  *
- * @param {string} name
+ * @param {string} name The name of a the "thing" used as a bridge.
  * @param {integer} x  Position: `1 <= x <= max_x`
  * @param {integer} y  Position: `1 <= y <= max_y`
  *
  * @throws Will throw an error if `(x, y)` is not a valid location.
- * @throws Will throw an error if `name` is not a known thing.
-
  * @throws Will throw an error if there is no such named bridge to remove
  *        at that location
- *
- * @todo add test
- * @todo add examples
- * @todo deal with translation
  */
 RUR.remove_bridge = function (name, x, y) {
     "use strict";
-    var args;
-    args= {x:x, y:y, type:"bridge", name:name, valid_names: RUR.KNOWN_THINGS};
+    var args, english_name;
+    english_name = RUR.translate_to_english(name);
+    args= {x:x, y:y, type:"bridge", name:english_name, valid_names: RUR.KNOWN_THINGS};
     if (RUR.get_bridge(x, y) == name) {
         RUR._remove_artefact(args);
     } else {
-        throw new RUR.ReeborgError("No bridge named <code>" + name + "</code>to remove here.");
+        throw new RUR.ReeborgError("No bridge named <code>" + name + "</code> to remove here.");
     }
     RUR.record_frame("RUR.remove_bridge", args);
 };
@@ -78,15 +78,6 @@ RUR.remove_bridge = function (name, x, y) {
  *
  * @throws Will throw an error if `(x, y)` is not a valid location.
  *
- * @todo add test
- * @todo add proper examples
- * @todo deal with translation
- * @example
- * // shows how to set various tiles;
- * // the mode will be set to Python and the highlighting
- * // will be turned off
- * World("/worlds/examples/tile1.json", "Example 1")
- *
  */
 
 RUR.get_bridge = function (x, y) {
@@ -96,14 +87,15 @@ RUR.get_bridge = function (x, y) {
     if (tile === null) {
         return null;
     } else {
-        return tile[0];
+        return RUR.translate(tile[0]);
     }
 };
 
 /** @function is_bridge
  * @memberof RUR
  * @instance
- * @summary This function indicates if a named bridge is present at a given location
+ * @summary This function returns `true/True` if a named bridge is present
+ * at a given location, `false/False` otherwise
  *
  * @param {string} name The name of the bridge
  * @param {integer} x  Position: `1 <= x <= max_x`
@@ -111,17 +103,7 @@ RUR.get_bridge = function (x, y) {
  *
  * @throws Will throw an error if `(x, y)` is not a valid location.
  *
- * @todo add test
- * @todo add proper examples
- * @todo deal with translation
- * @example
- * // shows how to set various tiles;
- * // the mode will be set to Python and the highlighting
- * // will be turned off
- * World("/worlds/examples/tile1.json", "Example 1")
- *
  */
-
 
 RUR.is_bridge = function (name, x, y) {
     return RUR.get_bridge(x, y) == name;
@@ -131,26 +113,16 @@ RUR.is_bridge = function (name, x, y) {
 /** @function get_bridge_protections
  * @memberof RUR
  * @instance
- * @summary This function gets the bridge name found at given location.
- *    If nothing is found at that location,
- *    `null` is returned (which is converted to `None` in Python programs.)
+ * @summary This function returns an array of "protections" given by a bridge at
+ * that location. If no bridge is found, or if a bridge is found but offer no
+ * protection, an empty array is returned.
  *
  * @param {integer} x  Position: `1 <= x <= max_x`
  * @param {integer} y  Position: `1 <= y <= max_y`
  *
  * @throws Will throw an error if `(x, y)` is not a valid location.
  * @returns {Array} An array of strings, each string being a protection
- *                 against a specific type of artefact; this could be
- *                 an empty array.
- *
- * @todo add test
- * @todo add proper examples
- * @todo deal with translation
- * @example
- * // shows how to set various tiles;
- * // the mode will be set to Python and the highlighting
- * // will be turned off
- * World("/worlds/examples/tile1.json", "Example 1")
+ * against a specific type of fatality; this could be an empty array.
  *
  */
 
@@ -160,7 +132,10 @@ RUR.get_bridge_protections = function (x, y) {
     tile = RUR.get_bridge(x, y);
     if (tile === null) {
         return [];
-    } else if (RUR.THINGS[tile].protections !== undefined) {
+    } else {
+        tile = RUR.translate_to_english(tile);
+    }
+    if (RUR.THINGS[tile].protections !== undefined) {
         return RUR.THINGS[tile].protections;
     } else {
         return [];

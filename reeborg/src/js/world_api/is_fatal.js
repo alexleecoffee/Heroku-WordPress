@@ -1,4 +1,5 @@
 require("./../rur.js");
+require("./../translator.js");
 require("./background_tile.js");
 require("./bridges.js");
 require("./obstacles.js");
@@ -7,11 +8,13 @@ require("./obstacles.js");
  * @memberof RUR
  * @instance
  *
- * @desc This needs to be documented
+ * @desc This return a list of protections carried by the robot
+ * against named fatalities.
  *
  * @param {object} robot_body  robot body object
  *
- * @returns an array of protections
+ * @returns an array of protections;
+ *
  */
 RUR.get_protections = function (robot) {
     "use strict";
@@ -35,14 +38,16 @@ RUR.get_protections = function (robot) {
 /** @function is_fatal_position
  * @memberof RUR
  * @instance
+ * @desc Indicates if the position would be fatal for the robot. A robot can
+ * carry protections against fatalities
  *
  * @param {integer} x  Position: `1 <= x <= max_x`
  * @param {integer} y  Position: `1 <= y <= max_y`
  * @param {object} robot_body  robot body object
  *
- * @desc This needs to be documented
- *
- * @returns The message to show if it is a fatal position, otherwise `false`.
+ * @returns The message of the first `fatal` thing found
+ * [for which the robot has no protection]; if no such thing is found,
+ * `false/False` is returned.
  */
 RUR.is_fatal_position = function (x, y, robot){
     "use strict";
@@ -53,13 +58,10 @@ RUR.is_fatal_position = function (x, y, robot){
     obstacles = RUR.get_obstacles(x, y);
     if (obstacles) {
         for (obs of obstacles) {
-            // Here, and below, we call RUR._get_property instead of
-            // RUR.get_property since this uses the internal english names;
-            // RUR.get_property assumes an untranslated argument.
-            if (RUR._get_property(obs, "fatal")) {
-                if (protections.indexOf(RUR._get_property(obs, "fatal")) === -1) {
-                    if (RUR.THINGS[obs].message) {
-                        return RUR.THINGS[obs].message;
+            if (RUR.get_property(obs, "fatal")) {
+                if (protections.indexOf(RUR.get_property(obs, "fatal")) === -1) {
+                    if (RUR.THINGS[RUR.translate_to_english(obs)].message) {
+                        return RUR.THINGS[RUR.translate_to_english(obs)].message;
                     } else {
                         return "Fatal obstacle needs message defined";
                     }
@@ -73,11 +75,11 @@ RUR.is_fatal_position = function (x, y, robot){
     protections = protections.concat(RUR.get_bridge_protections(x, y));
     tile = RUR.get_background_tile(x, y);
     // tile is a name; it could be a colour, which is never fatal.
-    if (tile && RUR.THINGS[tile] !== undefined) {
-        if (RUR._get_property(tile, "fatal")) {
-            if (protections.indexOf(RUR._get_property(tile, "fatal")) === -1) {
-                if (RUR.THINGS[tile].message) {
-                    return RUR.THINGS[tile].message;
+    if (tile && RUR.THINGS[RUR.translate_to_english(tile)] !== undefined) {
+        if (RUR.get_property(tile, "fatal")) {
+            if (protections.indexOf(RUR.get_property(tile, "fatal")) === -1) {
+                if (RUR.THINGS[RUR.translate_to_english(tile)].message) {
+                    return RUR.THINGS[RUR.translate_to_english(tile)].message;
                 } else {
                     return "Fatal tile needs message defined";
                 }
@@ -92,11 +94,13 @@ RUR.is_fatal_position = function (x, y, robot){
 /** @function is_detectable_position
  * @memberof RUR
  * @instance
+ * @desc For Reeborg to determine if a fatal "thing" is present (e.g., for
+ * `front_is_clear()  to return `false/False`), the "thing" must have a
+ * `detectable` attribute which evaluates to `true/True`.  This function returns
+ * `true/True` if there is as least such a detectable "thing" at that position.
  *
  * @param {integer} x  Position: `1 <= x <= max_x`
  * @param {integer} y  Position: `1 <= y <= max_y`
- *
- * @desc This needs to be documented
  *
  * @returns `true` if this position is detectable by the robot, `false` otherwise
  */
@@ -112,11 +116,13 @@ RUR.is_detectable_position = function (x, y){
         tiles = [];
     }
     tile = RUR.get_background_tile(x, y);
-    if (tile && RUR.THINGS[tile] !== undefined) {
+    // all tiles obtained so far are translated arguments
+    if (tile && RUR.THINGS[RUR.translate_to_english(tile)] !== undefined) {
         tiles.push(tile);
     }
     for (tile of tiles) {
-        if (RUR._get_property(tile, "detectable")) {
+        // get_property, without a leading underscore, works for original language
+        if (RUR.get_property(tile, "detectable")) {
             return true;
         }
     }

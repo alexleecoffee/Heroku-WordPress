@@ -1,5 +1,11 @@
 from browser import window
 from preprocess import transform
-from reeborg_fr import *
+from common import _import_fr
+
+_import_fr(globals())
+
 src = transform(window.library.getValue())
-exec(src)
+try:
+    exec(src, globals_)
+except Exception as e:
+    window.RUR.__python_error = e

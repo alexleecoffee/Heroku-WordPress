@@ -1,5 +1,5 @@
 // the following is used in a few places below
-var mac_user_save_files_fr = ' <b>Utilisateurs Mac:</b> consultez <a href="https://github.com/aroberge/reeborg/blob/master/known_problems.md" target="_blank" rel="noopener">Problèmes connus</a>.';
+var mac_user_save_files_fr = ' <b>Utilisateurs Mac:</b> consultez <a href="https://github.com/aroberge/reeborg/blob/master/dev_tools/known_problems.md" target="_blank" rel="noopener">Problèmes connus</a>.';
 
 exports.ui_fr = ui_fr = {};
 exports.fr_to_en = fr_to_en = {};
@@ -47,9 +47,13 @@ fr_to_en["seau d'eau"] = "bucket";
 ui_fr["bulb"] = "bulbe de tulipe";
 fr_to_en["bulbe de tulipe"] = "bulb";
 ui_fr["Tulip bulb: might grow into a nice tulip with some water from a bucket."] = "Bulbe de tulipe : pourrait devenir une belle tulipe avec un seau d'eau.";
+ui_fr["bricks"] = "briques";
+fr_to_en["briques"] = "bricks";
 
 ui_fr["mud"] = "boue";
 fr_to_en["boue"] = "mud";
+ui_fr["soil"] = "sol";
+fr_to_en["sol"] = "soil";
 ui_fr["water"] = "eau";
 fr_to_en["eau"] = "water";
 ui_fr["grass"] = "gazon";
@@ -61,6 +65,8 @@ fr_to_en["glace"] = "ice";
 ui_fr["fire"] = "feu";
 fr_to_en["feu"] = "fire";
 
+ui_fr["infinite"] = "nombre infini";
+
 ui_fr["fence_right"] = "clôture_droite";
 fr_to_en["clôture_droite"] = "fence_right";
 ui_fr["fence_left"] = "clôture_gauche";
@@ -70,9 +76,10 @@ fr_to_en["clôture_double"] = "fence_double";
 ui_fr["fence_vertical"] = "clôture_verticale";
 fr_to_en["clôture_verticale"] = "fence_vertical";
 
-ui_fr["Problem with onload code."] = "Code Javascript 'onload' non valide; veuillez contacter le créateur de ce monde.";
+ui_fr["Invalid Javascript code in Onload editor"] = "Code Javascript 'onload' non valide; veuillez contacter le créateur de ce monde.";
+ui_fr["Invalid Python code in Onload editor"] = "Code Python 'onload' non valide; veuillez contacter le créateur de ce monde.";
 
-ui_fr["Too many steps:"] = "Trop d'instructions: {max_steps}<br>Utilisez <code>max_nb_instructions()(nb)</code> pour augmenter la limite.";
+ui_fr["Too many steps:"] = "Trop d'instructions: {max_steps}<br>Utilisez <code>max_nb_instructions(nb)</code> pour augmenter la limite.";
 ui_fr["<li class='success'>Reeborg is at the correct x position.</li>"] = "<li class='success'>Reeborg est à la bonne coordonnée x.</li>";
 ui_fr["<li class='failure'>Reeborg is at the wrong x position.</li>"] = "<li class='failure'>Reeborg est à la mauvaise coordonnée x.</li>";
 ui_fr["<li class='success'>Reeborg is at the correct y position.</li>"] = "<li class='success'>Reeborg est à la bonne coordonnée y.</li>";
@@ -101,6 +108,10 @@ ui_fr.east = "est";
 ui_fr.north = "nord";
 ui_fr.west = "ouest";
 ui_fr.south = "sud";
+fr_to_en["est"] = "east";
+fr_to_en["nord"] = "north";
+fr_to_en["ouest"] = "west";
+fr_to_en["sud"] = "south";
 ui_fr["Unknown orientation for robot."] = "Orientation inconnue.";
 
 ui_fr["Invalid position."] = "{pos} n'est pas une position valide.";
@@ -129,8 +140,8 @@ ui_fr[" is not a valid value!"] = " n'est pas une valeur valide!";
 ui_fr["Enter number of objects desired at that location."] = "Cliquez sur le monde pour fixer le nombre d'objet <code>{obj}</code> désiré à cet endroit.";
 ui_fr["Objects found here:"] = "Objets trouvés ici:";
 ui_fr["Description"] = "Description";
-ui_fr["A robot located here carries no objects."] = "A robot situé à {x},{y} ne transporte aucun objet.";
-ui_fr["A robot located here carries:"] = "Un robot situé à {x},{y} transporte:";
+ui_fr["A robot located here carries no objects."] = "A robot situé à (x, y) = ({x}, {y}) ne transporte aucun objet.";
+ui_fr["A robot located here carries:"] = "Un robot situé à (x, y) = ({x}, {y}) transporte:";
 ui_fr["random location"] = "une position choisie au hasard";
 ui_fr["Enter number of objects to give to robot."] = "Quel nombre de <code>{obj}</code> voulez-vous donner au robot?";
 ui_fr["Special information about this location:"] = "Information particulière au sujet de cet endroit:";
@@ -165,6 +176,7 @@ ui_fr["I cannot help you with this problem."] = "Je ne peux pas vous aider avec 
 
 ui_fr["I'm stuck in mud."] = "Je suis immobilisé dans la boue.";
 ui_fr["Mud: Reeborg <b>cannot</b> detect this and will get stuck if it moves to this location."] = "Boue: Reeborg <b>ne peut pas</b> détecter ceci et y sera immobilisé s'il va à cet endroit.";
+ui_fr["Soil: usually safe, but looks identical to mud."] = "Sol: habituellement sans problèmes, mais ressemble visuellement à la boue.";
 ui_fr["I'm slipping on ice!"] = "Je glisse sur la glace!";
 ui_fr["Ice: Reeborg <b>cannot</b> detect this and <em>might</em> slide and move to the next location if it moves to this location."] = "Glace: Reeborg <b>ne peut pas</b> détecter ceci et pourrait glisser à la prochaine case.";
 ui_fr["Grass: usually safe."] = "Gazon: habituellement sans problèmes.";
@@ -178,7 +190,7 @@ ui_fr["I hit a fence!"] = "J'ai frappé une clôture!";
 ui_fr["Fence: Reeborg <b>can</b> detect this but will be stopped by it."] = "Clôture: Reeborg <b>peut</b> détecter ceci mais il ne peut pas passer au travers.";
 ui_fr["Bridge:Reeborg <b>can</b> detect this and will know that it allows safe passage over water."] = "Pont: Reeborg <b>peut</b> détecter ceci et sait que cela lui permettra de traverser l'eau en sureté.";
 ui_fr["My joints are melting!"] = "Mes articulations fondent !";
-ui_fr["A bucket full of water"] = "Un seau rempli d'eau."
+ui_fr["A bucket full of water"] = "Un seau rempli d'eau.";
 
 
 fr_to_en["pont"] = "bridge";
@@ -228,6 +240,18 @@ ui_fr["SAVE LIBRARY EXPLAIN"] = "Sauvegarde le contenu de la bibliothèque dans 
 ui_fr["SAVE WORLD"] = "Sauvegarder le monde";
 ui_fr["SAVE WORLD EXPLAIN"] = "Sauvegarde le monde dans un fichier (format json) sur votre ordinateur." + mac_user_save_files_fr;
 
+
+ui_fr["PROGRESS SECTION TITLE"] = "Le résumé des tâches";
+ui_fr["PROGRESS EXPLAIN"] = "Les tâches résolues sont indiqués par " + RUR.CHECKMARK +
+    "dans le sélecteur de monde et l'information est sauvegardée dans votre navigateur. " +
+    "Si vous utilisez un navigateur différent, les tâches que vous avez résolues ailleurs n'apparaîtront pas. " +
+    "Si vous cliquez sur le bouton sauvegarder, un fichier nommé progress.json sera sauvegardé avec l'information requise. " +
+    "vous pouvez importer ce fichier dans un autre navigateur pour mettre vos tâches à jour dans ce dernier.";
+ui_fr["SAVE PROGRESS"] = "Sauvegarder";
+ui_fr["IMPORT PROGRESS"] = "Importer";
+ui_fr["RETRIEVE SOLUTION"] = "Récupérer la solution";
+ui_fr["RETRIEVE SOLUTION EXPLAIN"] = "Si une solution (blocs, ou code et possiblement code dans la biblio) pour ce monde et pour le mode de programmation courant a été sauvegardée dans le navigateur, elle sera récupérée et remplacera le programme présent.";
+
 ui_fr["ADD CONTENT TO WORLD"] = "Ajouter au monde le contenu des items indiqués ci-dessous.";
 ui_fr["ADD BLOCKLY TEXT"] = "Blocs de code";
 ui_fr["ADD EDITOR TEXT"] = "Code dans l'éditeur";
@@ -253,6 +277,7 @@ ui_fr["OBJECTS"] = "Objets";
 ui_fr["Python Code"] = "Code Python";
 ui_fr["Javascript Code"] = "Code Javascript";
 ui_fr["LIBRARY"] = "biblio";
+ui_fr["EXTRA"] = "extra";
 ui_fr["PRE"] = "Pre";
 ui_fr["POST"] = "Post";
 ui_fr["DESCRIPTION"] = "Desc.";
@@ -270,7 +295,6 @@ ui_fr["EDIT WORLD"] = "Édition du monde";
 ui_fr["EDIT WORLD EXPLAIN"] = "Vous pouvez créer vos propres mondes en modifiant un monde existant.";
 ui_fr["PROGRAM IN EDITOR"] = "Programme dans l'éditeur";
 ui_fr["PROGRAM IN BLOCKLY WORKSPACE"] = "Programme de blocs";
-ui_fr["REVERSE STEP EXPLAIN"] = "Renverse l'instruction précédemment exécutée.";
 ui_fr["CONTACT"] = "Courriel :";
 ui_fr["ISSUES"] = "Rapports de bogues, suggestions, autres problèmes, etc. (en anglais ou en français seulement).";
 ui_fr["FORUM"] = "Forum de discussions (en anglais ou en français seulement).";
@@ -357,10 +381,26 @@ ui_fr["Unlimited:"] = "Nombre illimité ";
 ui_fr["Give object to robot"] = "Donner des objets à Reeborg";
 ui_fr["GIVE OBJECT EXPLAIN"] = "Choisissez un nombre d'objects que Reeborg aura en sa possession au début du programme. Cliquez sur la case à cocher si vous voulez un nombre illimité.";
 
-ui_fr["UPDATE EDITOR CONTENT"] = "Ce monde inclus un contenu pour l'éditeur qui est différent de celui qui s'y trouve présentement. Pour remplacer le contenu de l'éditeur par celui défini par le monde, cliquez sur le bouton.";
-ui_fr["UPDATE EDITOR BUTTON"] = "Remplacer le contenu de l'éditeur";
-ui_fr["UPDATE LIBRARY CONTENT"] = "Ce monde inclus un contenu pour la bibliothèque qui est différent de celui qui s'y trouve présentement. Pour remplacer le contenu de la bibliothèque par celui défini par le monde, cliquez sur le bouton.";
-ui_fr["UPDATE LIBRARY BUTTON"] = "Remplacer le contenu de la bibliothèque";
 ui_fr["UPDATE BLOCKLY CONTENT"] = "Ce monde inclus des blocs différents de ceux qui s'y trouvent présentement. Pour remplacer les blocs présents par ceux définis par le monde, cliquez sur le bouton.";
 ui_fr["UPDATE BLOCKLY BUTTON"] = "Remplacer les blocs";
 ui_fr["Contents from World"] = "Remplacement de contenus";
+
+ui_fr["WARNING: Do not change this comment."] = "ATTENTION: Ne modifiez pas ce commentaire.";
+ui_fr["Library Code is below."] = "Le code de la biblio est ci-dessous.";
+ui_fr["No solution can be saved when using REPL (Py)."] = "Aucune solution ne peut être sauvegardée dans le mode REPL (Py).";
+ui_fr["No solution can be loaded when using REPL (Py)."] = "Aucune solution ne peut être chargée dans le mode REPL (Py).";
+
+ui_fr["You are not allowed to use <code>done</code> in this world!"] = "Il n'est pas permis d'utiliser <code>termine()</code> dans ce monde !";
+ui_fr["Execution ended before the <em>Post</em> code was executed."] = "L'exécution du programme a terminé avant que le code <em>Post</em> ne soit interprété.";
+
+ui_fr["Difficulty level"] = "Niveau de difficulté";
+
+ui_fr["Expected result"] = "Résultat attendu";
+ui_fr["Differences highlighted"] = "Différences observées";
+ui_fr["Actual result"] = "Résultat observé";
+
+ui_fr["Cannot parse progress file."] = "Impossible d'extraire les données du fichier.";
+ui_fr["Cannot merge progress."] = "Impossible d'incorporer les données.";
+ui_fr["No solution found for this world."] = "Pas de solution trouvée pour ce monde.";
+
+ui_fr["THINKING"] = "Je pense ...";

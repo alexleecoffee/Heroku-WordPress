@@ -3,7 +3,6 @@
 
 require("./../rur.js");
 require("./../world_api/objects.js");
-// require("./../world_set/object.js");
 require("./../drawing/visible_world.js");
 var msg = require("./../../lang/msg.js");
 
@@ -30,7 +29,6 @@ exports.dialog_add_object = dialog_add_object = $("#dialog-add-object").dialog({
     },
     close: function() {
         add_object_form[0].reset();
-        $(this).dialog('destroy');
     }
 });
 
@@ -39,7 +37,7 @@ function set_nb_object () {
     RUR.add_object(RUR.state.specific_object, RUR.state.x, RUR.state.y,
         {min: parseInt($("#input-add-number").val(), 10),
          max: parseInt($("#maximum-number").val(), 10),
-         replace: true})
+         replace: true});
     RUR.vis_world.refresh_world_edited();
     dialog_add_object.dialog("close");
     return true;
@@ -47,5 +45,5 @@ function set_nb_object () {
 
 add_object_form = dialog_add_object.find("form").on("submit", function( event ) {
     event.preventDefault();
-    add_object();
+    set_nb_object();
 });

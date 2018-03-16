@@ -89,50 +89,24 @@ require("./../utils/supplant.js");
  * number of pixel equal to `y_offset`. This is only valid for images - not for
  * colors.
  *
+ * @param {object} [thing.transform] See the book
+ * **Reeborg's World: a Teacher's guide** for an explanation.
+ *
  * @throws Will throw an error if `name` attribute is not specified.
  * @throws Will throw an error if no image is supplied (either via the `url`
  *         or the `images` attribute) and `color` does not evaluate to true.
- *
- * @see Unit tests are found in {@link RUR.UnitTest#test_add_new_thing}
- * @example
- * // This first example shows how to set various "things";
- * // the mode will be set to Python and the highlighting
- * // will be turned off. Click on World Info for details
- * World("/worlds/examples/thing1.json", "Example 1")
- *
- * // A second example, showing how to set different types of
- * // animated images; the mode will be set to Javascript.
- * // Also click on World Info for details.
- * World("/worlds/examples/animated_all.json", "Example 2")
  */
 
 RUR.add_new_thing = function (thing) {
     "use strict";
-    var i, key, keys, name, original_arg;
+    var name;
     name = thing.name;
 
     if (name === undefined){
         throw new RUR.ReeborgError("RUR.add_new_thing(thing): thing.name attribute missing.");
     }
 
-    // avoid modifying the original object
-    original_arg = JSON.stringify(thing);  // for comparison below
-    thing = JSON.parse(original_arg);  // clone of original
-
-    if (RUR.KNOWN_THINGS.indexOf(name) != -1) {
-        if (original_arg == RUR.THINGS[name].original_arg) {
-            // use concatenation in log and warn, for comparison with unit tests.
-            if (RUR.UnitTest.logtest !== undefined){
-                console.log(name + " is already known; no need to recreate.");
-            }
-            return;
-        }
-        console.warn("Warning: redefining " + name);
-    } else {
-        RUR.KNOWN_THINGS.push(name);
-    }
-
-    thing.original_arg = original_arg;
+    RUR.KNOWN_THINGS.push(name);
     RUR.THINGS[name] = thing;
     if (thing.color) {
         return;
@@ -214,17 +188,22 @@ RUR.show_all_things = function (property) {
             info +=  RUR.THINGS[name][property] + "</td><td>";
         }
         if (url !== undefined) {
-            info += "<img src = '" + RUR.THINGS[name].url + "'></td><td>";
+            info += "<img src = '" + RUR.THINGS[name].url + "'><br>" +
+                   RUR.THINGS[name].url + "</td><td>";
         } else if (images !== undefined) {
             for(j=0; j<images.length; j++) {
-                info += "<img src = '" + images[j] + "'> - ";
+                info += "<img src = '" + images[j] + "'> &nbsp; ";
+            }
+            for(j=0; j<images.length; j++) {
+                info += "<br>" + images[j];
             }
             info += "</td><td>";
         } else {
             info += "Missing image</td><td>";
         }
         if (RUR.THINGS[name].goal !== undefined) {
-            info += "<img src = '" + RUR.THINGS[name].goal.url + "'>";
+            info += "<img src = '" + RUR.THINGS[name].goal.url + "'><br>" +
+                    RUR.THINGS[name].goal.url;
         }
         info += "</td></tr>";
     }
@@ -288,7 +267,6 @@ RUR.has_property = function (name, property) {
  * write(RUR.get_property("water", "fatal"))  // Javascript
  */
 RUR.get_property = function (name, property) {
-    var property;
 
     name = RUR.translate_to_english(name);
 
@@ -309,7 +287,7 @@ RUR.get_property = function (name, property) {
 // translation logged in the browser console.
 RUR._get_property = function (name, property) {
     return RUR.get_property(RUR.translate(name), property);
-}
+};
 
 
 /*=============================

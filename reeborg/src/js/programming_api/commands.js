@@ -20,16 +20,27 @@ require("./../drawing/visible_robot.js");
 require("./../editors/update.js");
 require("./../world_api/background_tile.js");
 
-RUR.inspect = function (obj){
-    var props, result = "";
+RUR._inspect_ = function (obj){
+    var props, result, head = "<table border='1'><tr><th>name</th><th>type</th></tr>";
+    result = head;
     for (props in obj) {
-        if (typeof obj[props] === "function") {
-            result += props + "()\n";
-        } else{
-            result += props + "\n";
+        result += "<tr><td>" + props + "</td><td>";
+        if (Object.prototype.toString.call(obj[props]) == "[object Array]") {
+            result += "Array</td></tr>";
+        } else {
+            result += typeof(obj[props]) + "</td></tr>";
         }
     }
-    RUR.output._write(result);
+    if (result == head) {
+        if (result == "[object Object]") {
+            result = "{}";
+        } else {
+            result = "<pre>" + obj.toString() + "</pre>";
+        }
+    } else {
+        result += "</table>";
+    }
+    RUR._print_html_(result, true); // true will replace existing content
 };
 
 function user_no_highlight () {
@@ -37,6 +48,7 @@ function user_no_highlight () {
         RUR.state.highlight = false;
         $("#highlight").addClass("blue-gradient");
         $("#highlight").removeClass("active-element");
+        throw new RUR.ReeborgOK(RUR.translate("Turning highlighting off!"));
     }
 }
 
@@ -61,15 +73,19 @@ RUR._color_here_ = function () {
 };
 
 RUR._default_robot_body_ = function () { // simply returns body
-    return RUR.get_current_world().robots[0];
+    var body;
+    try {
+        body = RUR.get_current_world().robots[0];
+    } catch (e) {
+        body = {};
+    }
+    return body;
 };
-
-RUR._dir_js_ = RUR.inspect; // defined above
 
 RUR._done_ = RUR.control.done;
 
 RUR._front_is_clear_ = function() {
-  return RUR.control.front_is_clear(RUR.get_current_world().robots[0]);
+    return RUR.control.front_is_clear(RUR.get_current_world().robots[0]);
 };
 
 
@@ -86,14 +102,18 @@ RUR._new_robot_images_ = RUR.new_robot_images; // defined in visible_robot.js
 RUR._no_highlight_ = user_no_highlight; // defined above
 
 RUR._object_here_ = function (arg) {
-    return RUR.world_get.object_at_robot_position(RUR.get_current_world().robots[0], arg);
+    obj = RUR.world_get.object_at_robot_position(RUR.get_current_world().robots[0], arg);
+    if (obj.length === 0) {
+        return false;
+    } 
+    return obj;
 };
 
 RUR._paint_square_ = function (color) {
     // note that this can do more than simply setting the color: it can also
     // set the tile type.
     var robot = RUR.get_current_world().robots[0];
-    RUR.add_background_tile(color, robot.x, robot.y);
+    RUR.add_colored_tile(color, robot.x, robot.y);
 };
 
 RUR._pause_ = RUR.control.pause;
@@ -106,8 +126,8 @@ RUR._put_ = function(arg) {
     RUR.control.put(RUR.get_current_world().robots[0], arg);
 };
 
-RUR._throw_ = function(arg) {
-    RUR.control.throw(RUR.get_current_world().robots[0], arg);
+RUR._toss_ = function(arg) {
+    RUR.control.toss(RUR.get_current_world().robots[0], arg);
 };
 
 RUR._recording_ = function(bool) {
@@ -124,7 +144,7 @@ RUR._right_is_clear_ = function() {
     return RUR.control.right_is_clear(RUR.get_current_world().robots[0]);
 };
 
-RUR._set_max_nb_instructions_ = function(n){
+RUR._set_max_nb_steps_ = function(n){
     RUR.MAX_STEPS = n;
 };
 
@@ -148,15 +168,13 @@ RUR._turn_left_ = function () {
     RUR.control.turn_left(RUR.get_current_world().robots[0]);
 };
 
-RUR._view_source_js_ = RUR.output.view_source_js;
-
 RUR._wall_in_front_ = function() {
     return RUR.control.wall_in_front(RUR.get_current_world().robots[0]);
 };
 
 RUR._write_ = RUR.output.write;
 
-RUR.__write_ = RUR.output._write;
+RUR._write_ln = RUR.output.write_ln;
 
 RUR._wall_on_right_ = function() {
     return RUR.control.wall_on_right(RUR.get_current_world().robots[0]);
@@ -203,15 +221,15 @@ RUR._UR.object_here_ = function (robot, obj) {
 };
 
 RUR._UR.paint_square_ = function (color, robot_body) {
-    RUR.add_background_tile(color, robot_body.x, robot_body.y);
-}
+    RUR.add_colored_tile(color, robot_body.x, robot_body.y);
+};
 
 RUR._UR.put_ = function (robot, obj) {
     RUR.control.put(robot, obj);
 };
 
-RUR._UR.throw_ = function (robot, obj) {
-    RUR.control.throw(robot, obj);
+RUR._UR.toss_ = function (robot, obj) {
+    RUR.control.toss(robot, obj);
 };
 
 RUR._UR.right_is_clear_ = function (robot) {

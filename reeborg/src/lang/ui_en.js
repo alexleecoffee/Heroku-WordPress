@@ -1,5 +1,5 @@
 // the following is used in a few places below
-var mac_user_save_files_en = ' <b>Mac users:</b> please see <a href="https://github.com/aroberge/reeborg/blob/master/known_problems.md" target="_blank" rel="noopener">Known problems</a>.';
+var mac_user_save_files_en = ' <b>Mac users:</b> please see <a href="https://github.com/aroberge/reeborg/blob/master/dev_tools/known_problems.md" target="_blank" rel="noopener">Known problems</a>.';
 
 exports.ui_en = ui_en = {};
 exports.en_to_en = en_to_en = {};
@@ -29,23 +29,27 @@ ui_en["triangle"] = en_to_en["triangle"] = "triangle";
 ui_en["tulip"] = en_to_en["tulip"] = "tulip";
 ui_en["bucket"] = en_to_en["bucket"] = "bucket";
 ui_en["bulb"] = en_to_en["bulb"] = "bulb";
+ui_en["bricks"] = en_to_en["bricks"] = "bricks";
 
 ui_en["mud"] = en_to_en["mud"] = "mud";
+ui_en["soil"] = en_to_en["soil"] = "soil";
 ui_en["water"] = en_to_en["water"] = "water";
 ui_en["grass"] = en_to_en["grass"] = "grass";
 ui_en["gravel"] = en_to_en["gravel"] = "gravel";
 ui_en["ice"] = en_to_en["ice"] = "ice";
 ui_en["fire"] = en_to_en["fire"] = "fire";
 
+ui_en["infinite"] = "infinite number";
+
 ui_en["fence_right"] = en_to_en["fence_right"] = "fence_right";
 ui_en["fence_left"] = en_to_en["fence_left"] = "fence_left";
 ui_en["fence_vertical"] = en_to_en["fence_vertical"] = "fence_vertical";
 ui_en["fence_double"] = en_to_en["fence_double"] = "fence_double";
 
+ui_en["Invalid Javascript code in Onload editor"] = "Invalid Javascript onload code; contact the creator of this world.";
+ui_en["Invalid Python code in Onload editor"] = "Invalid Python onload code; contact the creator of this world.";
 
-ui_en["Problem with onload code."] = "Invalid Javascript onload code; contact the creator of this world.";
-
-ui_en["Too many steps:"] = "Too many steps: {max_steps}<br>Use <code>set_max_nb_instructions(nb)</code> to increase the limit.";
+ui_en["Too many steps:"] = "Too many steps: {max_steps}<br>Use <code>set_max_nb_steps(nb)</code> to increase the limit.";
 ui_en["<li class='success'>Reeborg is at the correct x position.</li>"] = "<li class='success'>Reeborg is at the correct x position.</li>";
 ui_en["<li class='failure'>Reeborg is at the wrong x position.</li>"] = "<li class='failure'>Reeborg is at the wrong x position.</li>";
 ui_en["<li class='success'>Reeborg is at the correct y position.</li>"] = "<li class='success'>Reeborg is at the correct y position.</li>";
@@ -70,10 +74,10 @@ ui_en["There is no goal in this world!"] = "There is no goal in this world!";
 ui_en["I carry too many different objects. I don't know which one to put down!"] = "I carry too many different objects. I don't know which one to put down!";
 ui_en["Many objects are here; I do not know which one to take!"] = "Many different objects are here; I do not know which one to take!";
 
-ui_en.east = "east";
-ui_en.north = "north";
-ui_en.west = "west";
-ui_en.south = "south";
+ui_en.east = en_to_en.east = "east";
+ui_en.north = en_to_en.north = "north";
+ui_en.west = en_to_en.west = "west";
+ui_en.south = en_to_en.south = "south";
 ui_en["Unknown orientation for robot."] = "Unknown orientation for robot.";
 
 ui_en["Invalid position."] = "{pos} is an invalid position.";
@@ -103,9 +107,9 @@ ui_en[" is not a valid value!"] = " is not a valid value!";
 ui_en["Enter number of objects desired at that location."] = "Click on world to set number <code>{obj}</code>.";
 ui_en["Objects found here:"] = "Objects found here:";
 ui_en["Description"] = "Description";
-ui_en["A robot located here carries no objects."] = "A robot located at {x},{y} carries no objects.";
+ui_en["A robot located here carries no objects."] = "A robot located at (x, y) = ({x}, {y}) carries no objects.";
 ui_en["Goal to achieve:"] = "Goal to achieve:";
-ui_en["A robot located here carries:"] = "A robot located at {x},{y} carries:";
+ui_en["A robot located here carries:"] = "A robot located at (x, y) = ({x}, {y}) carries:";
 ui_en["random location"] = "random location";
 ui_en["Enter number of objects to give to robot."] = "Enter number of <code>{obj}</code> to give to robot.";
 ui_en["Special information about this location:"] = "Special information about this location:";
@@ -138,6 +142,7 @@ ui_en["I cannot help you with this problem."] = "I cannot help you with this pro
 
 ui_en["I'm stuck in mud."] = "I'm stuck in mud.";
 ui_en["Mud: Reeborg <b>cannot</b> detect this and will get stuck if it moves to this location."] = "Mud: Reeborg <b>cannot</b> detect this and will get stuck if it moves to this location.";
+ui_en["Soil: usually safe, but looks identical to mud."] = "Soil: usually safe, but looks identical to mud.";
 ui_en["I'm slipping on ice!"] = "I'm slipping on ice!";
 ui_en["Ice: Reeborg <b>cannot</b> detect this and <em>might</em> slide and move to the next location if it moves to this location."] = "Ice: Reeborg <b>cannot</b> detect this and <em>might</em> slide and move to the next location if it moves to this location.";
 ui_en["Grass: usually safe."] = "Grass: usually safe.";
@@ -199,6 +204,17 @@ ui_en["SAVE LIBRARY EXPLAIN"] = "Saves the content of the library in a file." + 
 ui_en["SAVE WORLD"] = "Save world to file";
 ui_en["SAVE WORLD EXPLAIN"] = "Saves the world (as a json object) to a file on your computer." + mac_user_save_files_en;
 
+ui_en["PROGRESS SECTION TITLE"] = "Keeping track of tasks solved";
+ui_en["PROGRESS EXPLAIN"] = "Tasks solved are marked with " + RUR.CHECKMARK +
+    "in the world selector and the information is saved in your browser. If you use a different browser, " +
+    "the tasks you have already solved using a different browser will not be shown. " +
+    "If you click on the save button below, a file named progress.json will be saved with the tasks solved " +
+    "recorded in the current browser. You can import this file in a different browser so that your progress can be updated.";
+ui_en["SAVE PROGRESS"] = "Save";
+ui_en["IMPORT PROGRESS"] = "Import";
+ui_en["RETRIEVE SOLUTION"] = "Retrieve solution";
+ui_en["RETRIEVE SOLUTION EXPLAIN"] = "If a solution (blocks, or code and possibly code in library) for this world has been saved in the browser for the current programming mode, it will be retrieved and replace the current content.";
+
 ui_en["ADD CONTENT TO WORLD"] = "Add content to world from selected items below.";
 ui_en["ADD BLOCKLY TEXT"] = "Code blocks";
 ui_en["ADD EDITOR TEXT"] = "Code in editor";
@@ -224,6 +240,7 @@ ui_en["OBJECTS"] = "Objects";
 ui_en["Python Code"] = "Python Code";
 ui_en["Javascript Code"] = "Javascript Code";
 ui_en["LIBRARY"] = "library";
+ui_en["EXTRA"] = "extra";
 ui_en["PRE"] = "Pre";
 ui_en["POST"] = "Post";
 ui_en["DESCRIPTION"] = "Desc.";
@@ -241,7 +258,6 @@ ui_en["EDIT WORLD"] = "Edit world";
 ui_en["EDIT WORLD EXPLAIN"] = "You can create your own world by editing the current one.";
 ui_en["PROGRAM IN EDITOR"] = "Program in editor";
 ui_en["PROGRAM IN BLOCKLY WORKSPACE"] = "Program in blockly workspace";
-ui_en["REVERSE STEP EXPLAIN"] = "Reverses the previous execution step.";
 ui_en["CONTACT"] = "(English/French only) Email:";
 ui_en["ISSUES"] = "Bug reports, suggestions, other issues, etc. (English/French only)";
 ui_en["FORUM"] = "Discussion forum (English/French only)";
@@ -308,7 +324,7 @@ ui_en["NAME:"] = "Name:";
 ui_en["Save world in browser"] = "Save world in browser";
 
 ui_en["Set the world's dimensions"] = "Set the world's dimensions";
-ui_en["set-dimensions-explain"] = "If so desired, you can set the size of the world to be different from the default dimensions. Please remember that smaller resolution screen may not be able to display very large worlds.";
+ui_en["set-dimensions-explain"] = "If so desired, you can set the size of the world to be different from the default dimensions. Please remember that smaller resolution screens may not be able to display very large worlds.";
 ui_en["Maximum x value:"] = "Maximum x value:";
 ui_en["Maximum y value:"] = "Maximum y value:";
 ui_en["Use small tiles"] = "Use small tiles";
@@ -327,10 +343,26 @@ ui_en["Unlimited:"] = "Unlimited:";
 ui_en["Give object to robot"] = "Give object to robot";
 ui_en["GIVE OBJECT EXPLAIN"] = "Choose a number of objects for the robot to carry. Click on the checkbox if you wish that number to be unlimited.";
 
-ui_en["UPDATE EDITOR CONTENT"] = "This world has some default content for the editor. To replace the current content of your editor, click on the button";
-ui_en["UPDATE EDITOR BUTTON"] = "Replace editor content";
-ui_en["UPDATE LIBRARY CONTENT"] = "This world has some default content for the library. To replace the current content of your library, click on the button";
-ui_en["UPDATE LIBRARY BUTTON"] = "Replace library content";
 ui_en["UPDATE BLOCKLY CONTENT"] = "This world has some default content for the blocks workspace. To replace the current blocks content, click on the button";
 ui_en["UPDATE BLOCKLY BUTTON"] = "Replace existing blocks";
 ui_en["Contents from World"] = "Contents from World";
+
+ui_en["WARNING: Do not change this comment."] = "WARNING: Do not change this comment.";
+ui_en["Library Code is below."] = "Library Code is below.";
+ui_en["No solution can be saved when using REPL (Py)."] = "No solution can be saved when using REPL (Py).";
+ui_en["No solution can be loaded when using REPL (Py)."] = "No solution can be loaded when using REPL (Py).";
+
+ui_en["You are not allowed to use <code>done</code> in this world!"] = "You are not allowed to use <code>done()</code> in this world!";
+ui_en["Execution ended before the <em>Post</em> code was executed."] = "Execution ended before the <em>Post</em> code was executed.";
+
+ui_en["Difficulty level"] = "Difficulty level";
+
+ui_en["Expected result"] = "Expected result";
+ui_en["Differences highlighted"] = "Differences highlighted";
+ui_en["Actual result"] = "Actual result";
+
+ui_en["Cannot parse progress file."] = "Cannot parse progress file.";
+ui_en["Cannot merge progress."] = "Cannot merge progress.";
+ui_en["No solution found for this world."] = "No solution found for this world.";
+
+ui_en["THINKING"] = "Thinking ...";

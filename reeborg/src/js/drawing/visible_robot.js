@@ -9,7 +9,6 @@ record_id("robot3");
 
 RUR.vis_robot = {};
 RUR.vis_robot.images = {};
-RUR.vis_robot.animated_robots = [];
 
 // we will keep track if we have loaded all images
 RUR.vis_robot.loaded_images = 0;
@@ -18,14 +17,18 @@ RUR.vis_robot.nb_images = 0;
 // enable changing defaults for unit tests or if put on different server location
 RUR.BASE_URL = RUR.BASE_URL || '';
 
-
 function set_images(images) {
+    "use strict"
     var default_images, east, west, north, south, robot, model = images.model;
 
     default_images = {east: RUR.BASE_URL + '/src/images/robot_e.png',
         north: RUR.BASE_URL + '/src/images/robot_n.png',
         west: RUR.BASE_URL + '/src/images/robot_w.png',
         south: RUR.BASE_URL + '/src/images/robot_s.png'
+    }
+
+    if (RUR.KNOWN_ROBOT_MODELS.indexOf(model) == -1) {
+        RUR.KNOWN_ROBOT_MODELS.push(model);
     }
 
     if (RUR.vis_robot.images[model] === undefined) {
@@ -41,79 +44,93 @@ function set_images(images) {
 
     if (robot.robot_e_img.src != images.east) {
         robot.robot_e_img.src = images.east || default_images.east;
+        robot.e_url = images.east || '/src/images/robot_e.png';
         robot.robot_e_img.onload = RUR.onload_new_image;
+        RUR.state.reset_default_robot_images_needed = true;
     }
     if (robot.robot_n_img.src != images.north) {
         robot.robot_n_img.src = images.north || default_images.north;
+        robot.n_url = images.north || '/src/images/robot_n.png';
         robot.robot_n_img.onload = RUR.onload_new_image;
+        RUR.state.reset_default_robot_images_needed = true;
     }
     if (robot.robot_w_img.src != images.west) {
         robot.robot_w_img.src = images.west || default_images.west;
+        robot.w_url = images.west || '/src/images/robot_w.png';
         robot.robot_w_img.onload = RUR.onload_new_image;
+        RUR.state.reset_default_robot_images_needed = true;
     }
     if (robot.robot_s_img.src != images.south) {
         robot.robot_s_img.src = images.south || default_images.south;
+        robot.s_url = images.south || '/src/images/robot_s.png';
         robot.robot_s_img.onload = RUR.onload_new_image;
+        RUR.state.reset_default_robot_images_needed = true;
     }
 }
 
 RUR.reset_default_robot_images = function () {
-    // classic; uses default
-    set_images({model: 0});
-    // 2d red rover
-    set_images({model: 1,
+    "use strict"
+    var saved_model;
+    set_images({model: "classic"}); // classic; uses default
+    set_images({model: "2d red rover",
         east: RUR.BASE_URL + '/src/images/rover_e.png',
         north: RUR.BASE_URL + '/src/images/rover_n.png',
         west: RUR.BASE_URL + '/src/images/rover_w.png',
         south: RUR.BASE_URL + '/src/images/rover_s.png'
     });
-    // 3d red rover
-    set_images({model: 2,
+    set_images({model: "3d red rover",
         east: RUR.BASE_URL + '/src/images/plain_e.png',
         north: RUR.BASE_URL + '/src/images/plain_n.png',
         west: RUR.BASE_URL + '/src/images/plain_w.png',
         south: RUR.BASE_URL + '/src/images/plain_s.png'
     });
-    // solar panel
-    set_images({model: 3,
+    set_images({model: "solar panel",
         east: RUR.BASE_URL + '/src/images/sp_e.png',
         north: RUR.BASE_URL + '/src/images/sp_n.png',
         west: RUR.BASE_URL + '/src/images/sp_w.png',
         south: RUR.BASE_URL + '/src/images/sp_s.png'
     });
 
-    $("#robot0 img").attr("src", RUR.vis_robot.images[0].robot_e_img.src);
-    $("#robot1 img").attr("src", RUR.vis_robot.images[1].robot_e_img.src);
-    $("#robot2 img").attr("src", RUR.vis_robot.images[2].robot_e_img.src);
-    $("#robot3 img").attr("src", RUR.vis_robot.images[3].robot_e_img.src);
-    RUR.select_default_robot_model(localStorage.getItem("robot_default_model"));
+    $("#robot0 img").attr("src", RUR.vis_robot.images["classic"].robot_e_img.src);
+    $("#robot1 img").attr("src", RUR.vis_robot.images["2d red rover"].robot_e_img.src);
+    $("#robot2 img").attr("src", RUR.vis_robot.images["3d red rover"].robot_e_img.src);
+    $("#robot3 img").attr("src", RUR.vis_robot.images["solar panel"].robot_e_img.src);
+
+    // handle situation where the user had saved values from old naming styles
+    saved_model = localStorage.getItem("robot_default_model");
+    if (saved_model==0 || saved_model==1 || saved_model==2 || saved_model==3) {
+        saved_model = RUR.reeborg_default_model;
+        localStorage.setItem("robot_default_model", saved_model);
+    }
+    RUR.user_selected_model = saved_model;
+    RUR.select_default_robot_model(saved_model);
 
     // additional robot images from rur-ple
-    set_images({model: 4,
+    set_images({model: "blue",
         east: RUR.BASE_URL + '/src/images/blue_robot_e.png',
         north: RUR.BASE_URL + '/src/images/blue_robot_n.png',
         west: RUR.BASE_URL + '/src/images/blue_robot_w.png',
         south: RUR.BASE_URL + '/src/images/blue_robot_s.png'
     });
-    set_images({model: 5,
+    set_images({model: "purple",
         east: RUR.BASE_URL + '/src/images/purple_robot_e.png',
         north: RUR.BASE_URL + '/src/images/purple_robot_n.png',
         west: RUR.BASE_URL + '/src/images/purple_robot_w.png',
         south: RUR.BASE_URL + '/src/images/purple_robot_s.png'
     });
-    set_images({model: 6,
+    set_images({model: "green",
         east: RUR.BASE_URL + '/src/images/green_robot_e.png',
         north: RUR.BASE_URL + '/src/images/green_robot_n.png',
         west: RUR.BASE_URL + '/src/images/green_robot_w.png',
         south: RUR.BASE_URL + '/src/images/green_robot_s.png'
     });
-    set_images({model: 7,
+    set_images({model: "light blue",
         east: RUR.BASE_URL + '/src/images/light_blue_robot_e.png',
         north: RUR.BASE_URL + '/src/images/light_blue_robot_n.png',
         west: RUR.BASE_URL + '/src/images/light_blue_robot_w.png',
         south: RUR.BASE_URL + '/src/images/light_blue_robot_s.png'
     });
-    set_images({model: 8,
+    set_images({model: "yellow",
         east: RUR.BASE_URL + '/src/images/yellow_robot_e.png',
         north: RUR.BASE_URL + '/src/images/yellow_robot_n.png',
         west: RUR.BASE_URL + '/src/images/yellow_robot_w.png',
@@ -122,39 +139,45 @@ RUR.reset_default_robot_images = function () {
     RUR.state.reset_default_robot_images_needed = false;
 };
 
-RUR.vis_robot.style = 0;
+RUR.select_default_robot_model = function (model) {
+    "use strict";
+    var robot;
 
-RUR.select_default_robot_model = function (arg) {
-    var style;
-    style = parseInt(arg, 10);
-    if ( !(style ===0 || style==1 || style==2 || style==3)){
-        style = 0;
+    if ( !(model == "classic" || model == "2d red rover"
+           || model == "3d red rover" || model == "solar panel")){
+        model = RUR.reeborg_default_model;
     }
-    RUR.vis_robot.style = style;
-    RUR.vis_robot.e_img = RUR.vis_robot.images[style].robot_e_img;
-    RUR.vis_robot.n_img = RUR.vis_robot.images[style].robot_n_img;
-    RUR.vis_robot.w_img = RUR.vis_robot.images[style].robot_w_img;
-    RUR.vis_robot.s_img = RUR.vis_robot.images[style].robot_s_img;
+    // the user could click on the robot model buttons when there are
+    // no robot present in the world.
+    try {
+        robot = RUR.get_current_world().robots[0];
+        robot.model = model;
+        RUR.user_selected_model = model;
+    } catch (e) {}
+
+    RUR.vis_robot.e_img = RUR.vis_robot.images[model].robot_e_img;
+    RUR.vis_robot.n_img = RUR.vis_robot.images[model].robot_n_img;
+    RUR.vis_robot.w_img = RUR.vis_robot.images[model].robot_w_img;
+    RUR.vis_robot.s_img = RUR.vis_robot.images[model].robot_s_img;
     if (RUR.vis_world !== undefined) {
         RUR.vis_world.refresh();
     }
-
-    localStorage.setItem("robot_default_model", style);
+    localStorage.setItem("robot_default_model", model);
 };
 $("#robot0").on("click", function (evt) {
-    RUR.select_default_robot_model(0);
+    RUR.select_default_robot_model("classic");
 });
 
 $("#robot1").on("click", function (evt) {
-    RUR.select_default_robot_model(1);
+    RUR.select_default_robot_model("2d red rover");
 });
 
 $("#robot2").on("click", function (evt) {
-    RUR.select_default_robot_model(2);
+    RUR.select_default_robot_model("3d red rover");
 });
 
 $("#robot3").on("click", function (evt) {
-    RUR.select_default_robot_model(3);
+    RUR.select_default_robot_model("solar panel");
 });
 
 RUR.reset_default_robot_images();
@@ -182,44 +205,62 @@ RUR.vis_robot.nb_images += 1;
  * @memberof RUR
  * @instance
  *
- * @desc Description to be added.
+ * @desc Robot animation is done by cycling through a list of robot models,
+ * each model having 4 images (one for each orientation).
+ *
+ * @param {array} models A list of robot models. If the list contains a single
+ * model, the animation is stopped.
+ * @param {object} robot_body A robot_body object.
  */
 
-RUR.animate_robot = function (models, robot) {
-    if (robot === undefined) {
-        robot = RUR.get_current_world().robots[0];
+RUR.animate_robot = function (models, robot_body) {
+    "use strict"
+    if (robot_body === undefined) {
+        robot_body = RUR.get_current_world().robots[0];
     }
-    RUR.vis_robot.animated_robots.push({
-        robot_id: robot.__id,
-        index: 0
-    })
-    robot.models_cycle = models;
-    RUR.record_frame("animate robot", robot.__id);
+    if (models.length > 1) {
+        robot_body.models_cycle = models;
+        robot_body.model_index = 0;
+    } else {
+        robot_body.models_cycle = null;
+        robot_body.model = models[0];
+    }
+    RUR.record_frame("animate robot", robot_body.__id);
     RUR.state.animated_robots = true;
 };
 
-function update_model(robot) {
-    var animated_robots = RUR.vis_robot.animated_robots,
-        nb_robots = RUR.vis_robot.animated_robots.length,
-        nb_models = robot.models_cycle.length;
-    for (var r = 0; r < nb_robots; r++) {
-        if (animated_robots[r].robot_id == robot.__id) {
-            animated_robots[r].index += 1;
-            animated_robots[r].index %= nb_models;
-            robot.model = robot.models_cycle[animated_robots[r].index];
+function update_model(robot) { // robot == robot.body
+    var default_robot, nb_models = robot.models_cycle.length;
+
+    if (robot.model_index == undefined) {
+        robot.model_index = 0;
+    }
+    robot.model = robot.models_cycle[robot.model_index];
+
+    default_robot = RUR.get_current_world().robots[0];
+    if (default_robot.__id == robot.__id) {
+        RUR.user_selected_model = undefined;  // overrides the user's choice
+    }
+    // do we cycle through the value; a model number of -1 ends a cycle
+    if (robot.model_index == nb_models-2){
+        if (robot.models_cycle[robot.model_index+1] == -1){
             return;
         }
     }
+    robot.model_index += 1;
+    robot.model_index %= nb_models;
+    return;
 };
 
 
 RUR.vis_robot.draw = function (robot) {
     "use strict";
-    var x, y, width, height, image;
+    var x, y, width, height, image, default_robot;
     if (!robot) {
         console.warn("RUR.vis_robot.draw called with no robot.");
         return;
     }
+
     // handling legacy Code
     if (robot.orientation !== undefined) {
         robot._orientation = robot.orientation;
@@ -241,34 +282,32 @@ RUR.vis_robot.draw = function (robot) {
         update_model(robot);
     }
 
+    if (robot.model == undefined) {
+        robot.model = RUR.reeborg_default_model;
+    } else if (RUR.KNOWN_ROBOT_MODELS.indexOf(robot.model) == -1) {
+        console.warn("robot model not defined: " + robot.model);
+        robot.model = RUR.reeborg_default_model;
+    }
+
+    if (RUR.user_selected_model !== undefined) {
+        default_robot = RUR.get_current_world().robots[0];
+        if (default_robot.__id == robot.__id ) {
+            robot.model = RUR.user_selected_model;
+        }
+    }
+
     switch(robot._orientation){
         case RUR.EAST:
-            if (robot.model !== undefined){
-                image = RUR.vis_robot.images[robot.model].robot_e_img;
-            } else {
-                image = RUR.vis_robot.e_img;
-            }
+            image = RUR.vis_robot.images[robot.model].robot_e_img;
             break;
         case RUR.NORTH:
-            if (robot.model !== undefined){
-                image = RUR.vis_robot.images[robot.model].robot_n_img;
-            } else {
-                image = RUR.vis_robot.n_img;
-            }
+            image = RUR.vis_robot.images[robot.model].robot_n_img;
             break;
         case RUR.WEST:
-            if (robot.model !== undefined){
-                image = RUR.vis_robot.images[robot.model].robot_w_img;
-            } else {
-                image = RUR.vis_robot.w_img;
-            }
+            image = RUR.vis_robot.images[robot.model].robot_w_img;
             break;
         case RUR.SOUTH:
-            if (robot.model !== undefined){
-                image = RUR.vis_robot.images[robot.model].robot_s_img;
-            } else {
-                image = RUR.vis_robot.s_img;
-            }
+            image = RUR.vis_robot.images[robot.model].robot_s_img;
             break;
         case -1:
             RUR.vis_robot.draw_random(robot);
@@ -377,18 +416,16 @@ RUR.vis_robot.draw_trace_segment = function (segment) {
  * as soon as the world is loaded.
  *
  * **Python**: You _can_ use `new_robot_images` without the `RUR` prefix. For the
- * French version, you can use `nouvelles_images_de_robot`. However, this form
- * is preferable as it can be used with either Javascript or Python in the
- * Onload editor.
- *
+ * French version, you can use `nouvelles_images_de_robot`. However, the
+ * function described here is preferable as it can be used with either
+ * Javascript or Python.
  *
  * @param {Object} images A Javascript object (similar to a Python dict) that
  * holds the relevant attributes.
  *
- * @param {integer} [images.model]  The model number for the robot; it must
- * be a non-negative integer.
- * If it is one of [0, 1, 2, 3], it will take the place of one of the visible
- * robot images that can be selected by the user. The default value is 3.
+ * @param {string} [images.model]  The model name of the robot. Integer values
+ * will be accepted as well except for -1 which will raise an error. If the
+ * model is not specified, the value `"anonymous"` will be used.
  *
  * @param {string} [images.east]  A url for the source of the image to be used
  * for the robot in the East orientation. If it is not specified, the
@@ -398,30 +435,19 @@ RUR.vis_robot.draw_trace_segment = function (segment) {
  * @param {string} [images.west]  Similar to `images.east`.
  * @param {string} [images.south]  Similar to `images.east`.
  *
- * @todo Implement robot animation by cycling model; do it by instance
- * @todo Add example
  */
 
 RUR.new_robot_images = function (images) {
     var model, random;
     if (images.model !== undefined) {
-        model = images.model;
-        if (!RUR.is_non_negative_integer(model)) {
-            throw new RUR.ReeborgError(RUR.translate("Robot model must be a non-negative integer."));
+        if (images.model == -1) {
+            throw new RUR.ReeborgError(RUR.translate("Robot model cannot be -1."));
         }
+        model = images.model;
     } else {
-        model = 3;
+        images.model = model = "anonymous";
     }
-    RUR.state.reset_default_robot_images_needed = true;
-
     set_images(images);
-
-    // change the image displayed in the html file.
-    if (model < 4) {
-        $("#robot" + model + " img").attr("src", images.east);
-    }
-
-    RUR.select_default_robot_model(model);
 };
 
 /** @function show_all_robots
@@ -432,7 +458,7 @@ RUR.new_robot_images = function (images) {
  *
  */
 RUR.show_all_robots = function () {
-    var info, model, east, north, west, south;
+    var info, model, east, north, west, south, e_url, w_url, s_url, n_url;
     info = "<table border='1'><tr><th>model</th><th>east</th><th>north</th><th>west</th><th>south</th></tr>";
 
     for (model in RUR.vis_robot.images) {
@@ -441,12 +467,16 @@ RUR.show_all_robots = function () {
             north = RUR.vis_robot.images[model].robot_n_img.src;
             west = RUR.vis_robot.images[model].robot_w_img.src;
             south = RUR.vis_robot.images[model].robot_s_img.src;
+            e_url = RUR.vis_robot.images[model].e_url;
+            n_url = RUR.vis_robot.images[model].n_url;
+            w_url = RUR.vis_robot.images[model].w_url;
+            s_url = RUR.vis_robot.images[model].s_url;
 
             info += "<tr><td>" +  model + "</td>";
-            info += "<td><img src = '" + east + "'></td>";
-            info += "<td><img src = '" + north + "'></td>";
-            info += "<td><img src = '" + west + "'></td>";
-            info += "<td><img src = '" + south + "'></td></tr>";
+            info += "<td><img src = '" + east + "'><br>" + e_url + "</td>";
+            info += "<td><img src = '" + north + "'><br>" + n_url + "</td>";
+            info += "<td><img src = '" + west + "'><br>" + w_url + "</td>";
+            info += "<td><img src = '" + south + "'><br>" + s_url + "</td></tr>";
         }
     }
 

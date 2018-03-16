@@ -1,5 +1,11 @@
 /*  This file contains generic methods called by more specialized methods
-    used to create worlds. */
+    used to create worlds.
+
+IMPORTANT: the comments begin by "/*" instead of "/**" so as not to be
+processed by jsdoc and be included in the public documentation.
+
+*/
+
 
 require("./../rur.js");
 require("./../translator.js");
@@ -41,7 +47,7 @@ function ensure_common_required_args_present(args) {
 RUR.UnitTest.ensure_common_required_args_present = ensure_common_required_args_present;
 
 
-/** @function _add_artefact
+/* @function _add_artefact
  * @memberof RUR
  * @instance
  * @summary **This function is intended for private use by developers.**
@@ -84,8 +90,6 @@ RUR.UnitTest.ensure_common_required_args_present = ensure_common_required_args_p
  * @throws Will throw an error if called after a range of values has already
  * been specified for that object at that location.
  *
- * @see {@link TestUnit#ARTEFACT_arg_checks} for unit tests checking valid arguments
- * @see {@link TestUnit#ARTEFACT_add_artefact} for basic unit tests
  *
  */
 RUR._add_artefact = function (args) {
@@ -136,7 +140,7 @@ RUR._add_artefact = function (args) {
 };
 
 
-/** @function _get_artefacts
+/* @function _get_artefacts
  * @memberof RUR
  * @instance
  * @summary **This function is intended for private use by developers.**
@@ -203,7 +207,7 @@ RUR._get_artefacts = function(args) {
 };
 
 
-/** @function _get_nb_artefact
+/* @function _get_nb_artefact
  * @memberof RUR
  * @instance
  * @summary **This function is intended for private use by developers.**
@@ -238,8 +242,6 @@ RUR._get_artefacts = function(args) {
  * @throws Will throw an error if `type` attribute is not specified.
  * @throws Will throw an error if a valid position is not specified.
  *
- * @see {@link TestUnit#ARTEFACT_arg_checks} for unit tests checking valid arguments
- * @see {@link TestUnit#ARTEFACT_get_nb_artefacts} for basic unit tests
  */
 RUR._get_nb_artefact = function(args) {
     "use strict";
@@ -280,7 +282,7 @@ RUR._get_nb_artefact = function(args) {
     }
 };
 
-/** @function _remove_artefact
+/* @function _remove_artefact
  * @memberof RUR
  * @instance
  * @summary **This function is intended for private use by developers.**
@@ -323,21 +325,15 @@ RUR._get_nb_artefact = function(args) {
  * need to be specified.  If a larger number of artefact are requested to
  * be removed than are present, an error will be raised.
  *
- * @param {string} [args.all] If true, all instances of the named artefact
- *       will be removed; otherwise, their number will simply be reduced by 1..
+ * @param {string} [args.all] If `true/True`, and `args.number` is not specified,
+ * all instances of the named artefact
+ * will be removed; otherwise, their number will simply be reduced by 1..
  *
  * @throws Will throw an error if `name` attribute is not specified.
  * @throws Will throw an error if `type` attribute is not specified.
  * @throws Will throw an error if a valid position is not specified.
  * @throws Will throw an error if no such artefact is found at that location.
- *
- * @todo  Need to implement `args.all`
- * @todo  Need to implement tests for  `args.all`
- * @todo Need to implement `args.number`
- * @todo Need to add full tests for `args.number`
- *
- * @see {@link TestUnit#ARTEFACT_arg_checks} for unit tests checking valid arguments
- * @see {@link TestUnit#ARTEFACT_remove_artefact} for basic unit tests
+ * @throws Will throw an error if there are not enough artefact to remove.
  *
  */
 RUR._remove_artefact = function (args) {
@@ -347,6 +343,10 @@ RUR._remove_artefact = function (args) {
     // Calling _get_nb_artefact will do all the required validation of basic arguments
     if (RUR._get_nb_artefact(args) === 0) {
         throw new RUR.ReeborgError("No artefact to remove");
+    }
+
+    if (args.number != undefined && args.number > RUR._get_nb_artefact(args)) {
+        throw new RUR.ReeborgError("Not enough artefacts here to remove.")
     }
 
     base = world;
@@ -396,7 +396,7 @@ RUR._remove_artefact = function (args) {
     }
 };
 
-/** @function _set_nb_artefact
+/* @function _set_nb_artefact
  * @memberof RUR
  * @instance
  * @summary **This function is intended for private use by developers.**
@@ -430,15 +430,10 @@ RUR._remove_artefact = function (args) {
  * @param {boolean} [args.goal] If specified, indicates that it is a goal that
  *                        must be set.
  *
- *
- *
  * @throws Will throw an error if `name` attribute is not specified.
  * @throws Will throw an error if `type` attribute is not specified.
  * @throws Will throw an error if `number` attribute is not specified.
  * @throws Will throw an error if a valid position is not specified.
- *
- * @see {@link TestUnit#ARTEFACT_arg_checks} for unit tests checking valid arguments
- * @see {@link TestUnit#ARTEFACT_set_nb_artefacts} for basic unit tests
  *
  */
 RUR._set_nb_artefact = function (args) {
