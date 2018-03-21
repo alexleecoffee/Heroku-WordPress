@@ -4,7 +4,7 @@
     "var tutorial_en = 'worlds/tutorial_en/'",
     "",
     "var contents = [",
-    "    [tutorial_en + 'alone.json', 'Alone'],",
+    "    [tutorial_en + 'alone.json', 'Alone22'],",
     "    [tutorial_en + 'home1.json', 'Home 1'],",
     "    [tutorial_en + 'home2.json', 'Home 2'],",
     "    [tutorial_en + 'home3.json', 'Home 3'],",
