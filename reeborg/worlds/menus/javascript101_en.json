@@ -1,0 +1,30 @@
+{
+  "blank_canvas": true,
+  "onload": [
+    "base = 'worlds/javascript101/';",
+    "",
+    "var contents = [",
+    "    [base + 'function_1_1.json', 'function_1_1'],",
+    "    [base + 'function_1_2.json', 'function_1_2'],",
+    "    [base + 'function_1_3.json', 'function_1_3'],",
+    "    [base + 'function_1_4.json', 'function_1_4'],",
+    "    [base + 'function_1_5.json', 'function_1_5'],",
+    "    [base + 'function_2_1.json', 'function_2_1'],",
+    "    [base + 'function_2_2.json', 'function_2_2'],",
+    "    [base + 'function_2_3.json', 'function_2_3'],",
+    "    [base + 'function_2_4.json', 'function_2_4'],",
+    "    [base + 'function_2_5.json', 'function_2_5'],",
+    "    [base + 'function_2_6.json', 'function_2_6'],",
+    "    [base + 'function_2_7.json', 'function_2_7'],",
+    "    [base + 'comment_log_1_1.json', 'comment_log_1_1'],",
+    "    [base + 'comment_log_1_2.json', 'comment_log_1_2'],",
+    "    [base + 'comment_log_1_3.json', 'comment_log_1_3'],",
+    "    [base + 'comment_log_1_4.json', 'comment_log_1_4'],",
+    "    [base + 'function_3_1.json', 'function_3_1'],",
+    "    [base + 'function_3_2.json', 'function_3_2'],",
+    "    [base + 'function_3_3.json', 'function_3_3'],",
+    "    [base + 'function_3_4.json', 'function_3_4'],",
+    "    ];",
+    "MakeCustomMenu(contents);"
+  ]
+}

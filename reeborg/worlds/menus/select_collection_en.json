@@ -60,9 +60,6 @@
     "<p><a class='fake-button' href='#' onclick=\"RUR.load_world_file('worlds/menus/varia_en.json')\">Go to Varia</a></p>"
   ],
   "onload": [
-    "RUR.load_world_file('worlds/menus/challenges_en.json')"
-    /* "RUR.show_description();",
-    "RUR.world_selector.append_world({url:RUR.BASE_URL + '/worlds/menus/select_collection_en.json', shortname:'Other worlds'})",
-    "RUR.world_selector.append_world({url:RUR.BASE_URL + '/worlds/tutorial_en/alone.json', shortname:'Alone'})" */
+    "RUR.load_world_file('worlds/menus/javascript101_en.json')"
   ]
 }
