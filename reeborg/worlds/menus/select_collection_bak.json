@@ -53,16 +53,15 @@
     "<a class='fake-button' href='#' onclick=\"RUR.load_world_file('worlds/menus/arg_var_en.json')\">Go to Variables, arguments and more</a></p>",
     "<hr>",
     "<h3>Object-Oriented Programming</h3>",
-    "<p>To be added.</p>",
+    "<p>To be added.</p>", 
     "<hr>",
     "<h3>Varia</h3>",
-    "<p>Varia is a collection of various worlds to be sorted later; constantly in flux.</p>",
+    "<p>Varia is a collection of various worlds to be sorted later; constantly in flux.</p>",    
     "<p><a class='fake-button' href='#' onclick=\"RUR.load_world_file('worlds/menus/varia_en.json')\">Go to Varia</a></p>"
   ],
   "onload": [
-    "RUR.load_world_file('worlds/menus/challenges_en.json')"
-    /* "RUR.show_description();",
+    "RUR.show_description();",
     "RUR.world_selector.append_world({url:RUR.BASE_URL + '/worlds/menus/select_collection_en.json', shortname:'Other worlds'})",
-    "RUR.world_selector.append_world({url:RUR.BASE_URL + '/worlds/tutorial_en/alone.json', shortname:'Alone'})" */
+    "RUR.world_selector.append_world({url:RUR.BASE_URL + '/worlds/tutorial_en/alone.json', shortname:'Alone'})"
   ]
 }
